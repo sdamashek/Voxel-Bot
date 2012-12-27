@@ -21,7 +21,7 @@ def getSummaryList():
 	data = data.lower() #Make everything lowercase for ease of parsing
 	dom = minidom.parseString(data)
 	changes = dom.getElementsByTagName("rc")
-	return [(i.attributes['comment'].value+" <a href=\"http://en.wikipedia.org/w/index.php?diff="+i.attributes['revid'].value+"\">Rev Link</a>") for i in changes]
+	return [(i.attributes['comment'].value+" Rev Link: http://en.wikipedia.org/w/index.php?diff="+i.attributes['revid'].value) for i in changes]
 def getCounts():
 	sums = getSummaryList()
 	revert = int(round((len(([i for i in sums if classifyEdit(i)]))+1)/5.0))
