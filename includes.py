@@ -32,5 +32,5 @@ def getSummaries(thatAreVandalism):
 	summaries = getSummaryList()
 	for i in summaries:
 		if classifyEdit(i) == thatAreVandalism:
-			e.append(i)
+			e.append(i+"\n\n")
 	return e
