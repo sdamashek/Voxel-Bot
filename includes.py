@@ -11,7 +11,7 @@ def classifyEdit(summary):
 		if i in summary:
 			return False
 	for i in vandalism:
-		if i in summary:
+		if i in summary.split("*/")[1]:
 			return True
 	return False
 def getSummaryList():
