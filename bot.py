@@ -9,8 +9,8 @@ def getCountThingy():
     x = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+currentTime+"&rclimit=5000&rcdir=older&rcprop=comment&format=xml"
     data = url.urlopen(x).read()
     data = data.lower()
-    count = int(round((data.lower().count("revert")/5.0)+1)) #Round up
-    totalEdits = int(round(data.lower().count('<rc type')/5.0))
+    count = int(round(((data.count("revert")-data.count("reverted good faith")-data.count("reverting good faith"))/5.0)+1)) #Round up
+    totalEdits = int(round(data.count('<rc type')/5.0))
     return (totalEdits, count)
 theTuple = getCountThingy()
 print "Edit Per Minute: ", theTuple[0]
