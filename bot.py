@@ -6,7 +6,7 @@ import re
 from logininfo import *
 def getCountThingy():
     currentTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", (time.gmtime(time.time()-300))) #EXAMPLE: from=20121226170007 time.time()-300
-    x = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+currentTime+"&rclimit=5000&rcdir=older&rcprop=comment&format=xml"
+    x = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+currentTime+"&rclimit=500&rcdir=older&rcprop=comment&format=xml"
     data = url.urlopen(x).read()
     data = data.lower()
     count = int(round(((data.count("revert")-data.count("reverted good faith")-data.count("reverting good faith")-data.count("help:reverting"))/5.0)+1)) #Round up
