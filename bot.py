@@ -6,11 +6,15 @@ import re
 from logininfo import * #import various libraries and the login info
 def getCountThingy():
     currentTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", (time.gmtime(time.time()-300))) #Format time according to MediaWiki API Specifications
+    otherCurrentTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", (time.gmtime(time.time()-180))) #Format time according to MediaWiki API Specifications
     x = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+currentTime+"&rclimit=500&rcdir=older&rcprop=comment&format=xml" #Define RecentChanges Query
+    y = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+otherCurrentTime+"&rclimit=500&rcdir=older&rcprop=comment&format=xml" #Define RecentChanges Query
     data = url.urlopen(x).read() #Make the request
     data = data.lower() #Make everything lowercase for ease of parsing
+    otherData = url.urlopen(y).read()
+    otherData = otherData.lower()
     count = int(round(((data.count("revert")-data.count("reverted good faith")-data.count("reverting good faith")-data.count("help:reverting"))/5.0)+1)) #Find the amount of hits of the word "revert" then subtract good faith and duplicate occurances, divide by 5 to average, and add 1 so it rounds up.
-    totalEdits = int(round(data.count('<rc type')/5.0)) #Calculate total edits in same manner
+    totalEdits = int(round(otherData.count('<rc type')/3.0)) #Calculate total edits in same manner (temp fix)
     return (totalEdits, count) #Return a tuple of the results
 theTuple = getCountThingy() #Define tuple as array
 print "Edit Per Minute: ", theTuple[0] #Output Edits per Minute to Output Screen for Debugging
