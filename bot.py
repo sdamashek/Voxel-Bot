@@ -9,7 +9,7 @@ def getCountThingy():
     x = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+currentTime+"&rcend="+time.strftime("&Y-&m-&dT%H:%M:%SZ", time.gmtime())+"&rclimit=500&rcdir=newer&rcprop=comment&format=xml" #Define RecentChanges Query
     data = url.urlopen(x).read() #Make the request
     data = data.lower() #Make everything lowercase for ease of parsing
-    count = int(round(((data.count("revert")-data.count("reverted good faith")-data.count("reverting good faith")-data.count("help:reverting"))/5.0)+1)) #Find the amount of hits of the word "revert" then subtract good faith and duplicate occurances, divide by 5 to average, and add 1 so it rounds up.
+    count = int(round(((data.count("revert")+data.count("rvv")+data.count("rv vand")+data.count("rv ")-data.count("rv good faith")-data.count("reverted good faith")-data.count("reverting good faith")-data.count("help:reverting"))/5.0)+1)) #Find the amount of hits of the word "revert" then subtract good faith and duplicate occurances, divide by 5 to average, and add 1 so it rounds up.
     totalEdits = int(round(data.count('<rc type')/5.0)) #Calculate total edits in same manner (temp fix)
     return (totalEdits, count) #Return a tuple of the results
 theTuple = getCountThingy() #Define tuple as array
