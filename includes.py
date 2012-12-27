@@ -5,7 +5,7 @@ import urllib
 from xml.dom import minidom
 def classifyEdit(summary):
 	summary = summary.lower()
-	vandalism = ["revert", "rv"]
+	vandalism = ["revert", "rv "]
 	notVandalism = ["good faith", "agf"]
 	for i in notVandalism:
 		if i in summary:
