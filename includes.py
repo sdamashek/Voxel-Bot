@@ -27,4 +27,9 @@ def getCounts():
 	revert = int(round((len(([i for i in sums if classifyEdit(i)]))+1)/5.0))
 	total = int(round((len(sums)+1)/5.0))
 	return (total, revert)
-
+def getSummaries(thatAreVandalism):
+	summaries = getSummaryList()
+	for i in summaries:
+		if classifyEdit(i) == thatAreVandalism:
+			print i
+			print "----------------"
