@@ -51,7 +51,7 @@ if str(theTuple[0]) + " " + str(theTuple[1]) not in b:
 	print loginResponse
 	x = ClientCookie.urlopen("http://en.wikipedia.org/w/api.php?action=tokens&format=xml").read().split('edittoken="')[1].split('" />')[0]
 	print x
-	editInfo = url.Request("http://en.wikipedia.org/w/api.php", urllib.urlencode({"format": "xml", "action": "edit", "token": x, "summary": "Updating Vandalism Information Template (Unapproved bot editing in own userspace)", "text": edit, "title": "User:VoxelBot/Vandalism information"}))
+	editInfo = url.Request("http://en.wikipedia.org/w/api.php", urllib.urlencode({"format": "xml", "action": "edit", "token": x, "summary": "Updating Vandalism Information Template (Unapproved bot editing [[Wikipedia:Bot_policy#Requests_for_approval|in own userspace)]]", "text": edit, "title": "User:VoxelBot/Vandalism information"}))
 	response = ClientCookie.urlopen(editInfo).read()
 	print response
 else:
