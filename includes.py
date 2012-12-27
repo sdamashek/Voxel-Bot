@@ -1,4 +1,7 @@
 from ClientCookie import *
+import time
+import urllib2 as url
+import urllib
 def classifyEdit(summary):
 	summary = summary.lower()
 	vandalism = ["revert", "rv"]
@@ -20,7 +23,7 @@ def getSummaryList():
 	return [i.attributes['comment'].value for i in changes]
 def getCounts():
 	sums = getSummaryList()
-	revert = len([i for i in sums if classifyEdit(i)])
-	total = len(sums)
+	revert = len([i for i in sums if classifyEdit(i)])/5.0
+	total = len(sums)/5.0
 	return (total, revert)
 
