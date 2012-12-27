@@ -1,0 +1,1061 @@
+This isn't really in proper GNU ChangeLog format, it just happens to
+look that way.
+
+2006-04-08 John J Lee <jjl@pobox.com>
+	* 1.3.0 release:
+	* Fix Refresh in case where the string "url" in the header value
+	  is in upper-case.
+	* Don't do broken XHTML handling by default (need to review code
+	  before switching this back on, e.g. should use a real XML parser
+	  for first-try at parsing).  HTTPEquivProcessor's
+	  i_want_broken_xhtml_support constructor argument gives the old
+	  behaviour.
+
+2006-03-23 John J Lee <jjl@pobox.com>
+	* 1.2.0 release:
+	* Stop trying to record precise dates in changelog, since that's
+	  silly ;-)
+	* ClientCookie is now dual-licensed: you may pick BSD or ZPL 2.1.
+	* ClientCookie.seek_wrapper instances can .copy()able, and the
+	  copies share a single cache (but response_seek_wrapper instances
+	  do not share header state, since the headers are mutable).
+	* Add .set_data() method to response_seek_wrapper.
+	* Support .code and .msg on response_seek_wrapper instances.
+	* Entity fixes (affects HTTP-EQUIV / Refresh handling).
+	* Allow decimal point in HTTP Refresh header pause times (Surachai
+	  Locharoen).
+	* setup.py fixes.
+
+2006-01-03 John J Lee <jjl@pobox.com>
+	* Released 1.1.1
+
+2006-01-02 John J Lee <jjl@pobox.com>
+	* Fix bug triggered by seek()ing past end of internal cache
+	  case in seek_wrapper.
+	* Tighten up seek_wrapper logic.
+	* Fixed HttpRefreshProcessor to handle default-URL case.
+	* Fixed functional tests (somebody's test page I was using went
+	  away, so I made a new test page on wwwsearch.sf.net).
+
+2005-12-03 John J Lee <jjl@pobox.com>
+	* Add setup.cfg for setuptools.
+	* Switch from htmllib to sgmllib.
+
+2005-11-19 John J Lee <jjl@pobox.com>
+	* Released 1.1.0
+
+2005-11-17 John J Lee <jjl@pobox.com>
+	* Expose response_seek_wrapper.
+	* Change handler_order for HTTPEquivProcessor so handlers that
+	  look at HTTP headers get to see equiv headers.
+
+2005-11-12 John J Lee <jjl@pobox.com>
+	* Check URL file extension more carefully.
+
+2005-10-31 John J Lee <jjl@pobox.com>
+	* setuptools support.
+
+2005-10-30 John J Lee <jjl@pobox.com>
+	* Move is_html() code here from mechanize.
+
+2005-10-29 John J Lee <jjl@pobox.com>
+	* Make logging categories more fine-grained.
+	* Fix response_seek_wrapper to support the urllib2 response
+	  interface.
+
+2005-06-28 John J Lee <jjl@pobox.com>
+	* Allow specifying parser class for equiv handling; default to
+	  using sgmllib parser.
+	* HTTP-Equiv fixes.
+
+2005-02-20 John J Lee <jjl@pobox.com>
+	* Allow pickling of seekable response objects, plus a bit of
+ 	  refactoring of response wrapper.
+	* Fix bug with RFC 2109 cookie handling: RFC 2109 cookies are
+ 	  now treated by default as Netscape cookies if RFC 2965
+ 	  handling is switched off.
+	* Add note about equivalent bug to that above in Python 2.4
+	  cookielib.
+	* Add DefaultCookiePolicy.rfc2109_as_netscape attribute
+	  (WARNING: this may change or go away if not accepted for
+	  Python 2.5).
+	* Add Cookie.rfc2109 attribute.
+	* Released 1.0.3
+
+2005-02-05 John J Lee <jjl@pobox.com>
+	* HTTPRobotRulesProcessor: don't clobber https->http.
+	* Add note about using HTTPRefreshProcessor with Python 2.4.
+
+2005-02-04 John J Lee <jjl@pobox.com>
+	* Fix more exception bugs in CookieJar subclass .load() methods
+	  (raise ClientCookie.LoadError, not IOError, on failure).
+	* Apply urlretrieve fix from Python SF patch #1062060 (fix for
+	  1016880 urllib.urlretrieve silently truncates dwnld).
+
+2005-01-18 John J Lee <jjl@pobox.com>
+	* Released 1.0.2 (First stable release of 1.0.x).
+	  (1.0.1 was never properly released, IIRC).
+
+2005-01-17 John J Lee <jjl@pobox.com>
+	* Remove thread synchronization from CookieJar, since I'm
+	  convinced it's broken.
+	* Cookies previously considered to have no name are now
+	  considered as if they had no value.  This was half-done in
+	  1.0.0a and in Python 2.4.0 cookielib (ie., it was broken).
+	  Note that this may break existing LWPCookieJar files if they
+	  contain such cookies (MozillaCookieJar files are OK).
+	* Don't lowercase cookie names if they happen to be one of the
+	  special cookie-attribute names (eg. Expires).
+	* Fix bug in LWPCookieJar. and MozillaCookieJar.load() (raise
+	  ClientCookie.LoadError, not IOError, on failure).
+
+2004-09-18 John J Lee <jjl@pobox.com>
+	* Expose BaseHandler.
+
+2004-09-15 John J Lee <jjl@pobox.com>
+	* Doc corrections.
+	* Exposed request_host function.
+	* Released 1.0.0a.
+
+2004-09-14 John J Lee <jjl@pobox.com>
+	* 0.9.x (now 1.0.x, in fact):
+	* When module logging not available, follow its API more closely:
+	  must now .addHandler(ClientCookie.StreamHandler()) as well as
+	  .setLevel(ClientCookie.DEBUG).
+	* Moved country-code TLD domain check into new method
+	  DefaultCookiePolicy.set_ok_countrycode_domain().
+	* Added docs to doc.html on saving / loading cookies and
+	  LWPCookieJar.  Thanks to Michael Foord for bug report.
+	* Removed dependency on BSDDB (Catherine Letondal).
+	* Minor bug fixes.
+	* Moved towards compatibility with 2.4's cookielib (new stdlib
+	  module derived from ClientCookie).  In particular:
+	* BaseProcessor has been removed in favour of BaseHandler.
+	* Added Request.get_origin_req_host() and .is_unverifiable()
+	  methods.
+	* CookieJar.policy is now private.  Added .set_policy() method.
+	* Cookie.rest is now private: use has_nonstandard_attr(),
+	  get_nonstandard_attr() and set_nonstandard_attr() instead.
+	* Request.unverifiable and .origin_req_host are now private,
+	  replaced by methods .get_unverifiable() and
+	  .get_origin_req_hoot().  You can still set these attributes
+	  on code that returns urllib2.Request objects which may be
+	  pre-2.4 urllib2.Requests (eg. ClientForm).  Such Requests
+	  will have these attributes honoured by
+	  RequestUpgradeProcessor.
+	* AbstractHTTPHandler uses httplib.HTTPConnection again (but
+	  this time it actually works).
+
+2004-05-01 John J Lee <jjl@pobox.com>
+	* Released 0.4.19 and 0.9.4a.
+
+2004-04-24 John J Lee <jjl@pobox.com>
+	* 0.9.x:
+	* Fixed various MSIECookieJar bugs.
+	* Fixed case of local Netscape cookie where domain is not an IP
+	  address (was not getting returned).
+	* Simplified CookieJar code :-)
+
+2004-04-06 John J Lee <jjl@pobox.com>
+	* 0.9.x:
+	* Reverted to old httplib.HTTP instead of httplib.HTTPConnection
+	  class, since use of the latter was broken
+	* Added OpenerFactory.
+
+2004-01-18 John J Lee <jjl@pobox.com>
+	* 0.9.x:
+	* Added urlretrieve() function and
+	  ClientCookie.OpenerDirector.retrieve() method, which work like
+	  their equivalents in urllib.
+	* AbstractHTTPHandler.do_open() now uses httplib.HTTPConnection,
+	  following Jeremy Hylton's patch in Python CVS.
+	* Initial port of ConnCache.pm from libwww-perl.  Not yet tested
+	  or integrated.
+
+2004-01-16 John J Lee <jjl@pobox.com>
+	* Added HTTPRobotRulesProcessor.
+	* Rewrote one of the examples in the documentation to reflect
+	  various changes that have gradually crept up on me.
+	* Small doc fixes.
+
+2004-01-05 John J Lee <jjl@pobox.com>
+	* test_urllib.HandlerTests.test_file now passes on Windows.
+	* Released 0.4.18 and 0.9.3a.
+
+2004-01-04 John J Lee <jjl@pobox.com>
+	* Changed return True to return 0 in BaseProcessor.__cmp__.
+	* Fixed http_error_302.  Got rid of .original_url, treat
+	  .origin_req_host correctly.
+	* 0.9:
+	* Renamed Request.iter_headers() to .header_items().
+	* unverifiable and origin_req_host are now attributes initialised
+	  by Request.__init__().  All arguments named unverifiable are now
+	  gone.
+
+2004-01-03 John J Lee <jjl@pobox.com>
+	* For Location:, URI: and Refresh:, use _Util.getheaders to get
+	  first header instead of just using dictionary-style lookup.
+	  Some servers return multiple Location headers, and dict-lookup
+	  gives a comma-separated string in that case, which is what's
+	  needed in these cases.
+	* Fixed spurious test_file failure in test_urllib2.py.
+
+2004-01-02 John J Lee <jjl@pobox.com>
+	* Fixed response_seek_wrapper (and started using it in 0.9.x, as
+	  well as 0.4.x).  Thanks to Erno Kuusela for bug report.
+	* Carry over .origin_req_host and .unverifiable attributes when
+	  upgrading urllib2.Request to ClientCookie.Request.  Previously,
+	  they were effectively clobbered.  Ugly, but having to set those
+	  attributes in the first place is ugly...
+	* Released 0.4.17 and 0.9.2a.
+
+2004-01-01 John J Lee <jjl@pobox.com>
+	* Fixed redirection yet again.  Thanks to Armand Lynch for bug
+	  report.  This time, the problem was that the state introduced by
+	  cookies makes it possible for redirection to occur to the same
+	  URL multiple times without an infinite loop occurring
+	  (regardless of redirection code).  Should have thought of that
+	  before...
+	* Fixed proxy handling.  _urllib2_support.methnames was still
+	  broken.  Thanks to Robert Kiendl for bug report.
+	* Released 0.4.16 and 0.9.1a.
+
+2003-12-30 John J Lee <jjl@pobox.com>
+	* Fixed request_path bug: missing brackets around format string
+	  tuple (only triggered when ;foo=bar parameters are present in
+	  URL.  Thanks to Ollie Rutherfurd for bug report.
+	* Released 0.4.15.
+
+2003-12-29 John J Lee <jjl@pobox.com>
+	* Fixed MSIECookieJar initialiser argument passing to base class.
+	* Fixed MSIECookieJar.load_cookie_data(), which was calling
+	  self.set_cookie() instead of using the base class' method,
+	  causing infinite recursion when called from .set_cookie().
+	* 0.9:
+	* Did some refactoring of MSIECookieJar stuff, and filled in more
+	  of MSIEDBCookieJar to convince myself that the base classes are
+	  good enough.
+	* Finished BSDDBCookieJar (NOT FULLY TESTED!).
+	* Released 0.4.14 and 0.9.0a.
+
+2003-12-28 John J Lee <jjl@pobox.com>
+	* Fixed a bug where https requests were missing important headers
+	  (like Host).  The problem was that I'd assigned the do_request
+	  method to the local scope instead of the HTTPSHandler class
+	  scope!  Thanks to Robbie Vanbrabant for the bug report.
+	* Another hack for AbstractHTTPHandler.do_open() (see 2003-12-21),
+	  and renamed .do_request() to .do_request_(), for the same
+	  reason.
+	* Released 0.4.13.
+
+2003-12-24 John J Lee <jjl@pobox.com>
+	* Modified setup.py so can easily register with PyPI.
+	* 0.9:
+	* IOError was inappropriately raised (and documented to be
+	  raised!) by .load() and .revert().  Now they raise
+	  ClientCookie.LoadError when the file format is not understood
+	  (and IOError in the usual circumstances).
+	* Moved FileCookieJar.as_lwp_str() into derived class
+	  LWPCookieJar, and updated tests as necessary.
+
+2003-12-21 John J Lee <jjl@pobox.com>
+	* Corrected Cookie.__repr__ to use repr(arg), not str(arg) and to
+	  do rest arg properly.
+	* Added unpleasant hack to deal with the fact that
+	  HTTPRedirectHandler appears to be a processor thanks to the
+	  redirect_request method (which is documented in std. library
+	  docs!).  Thankfully, Python CVS has a single base class for
+	  processors and handlers, so this problem isn't fatal, but still
+	  present (a URL like redirect://a.com/ would get redirect_request
+	  called to process the request, resulting in great confusion
+	  :-(( ).
+	* Released 0.4.12.
+
+2003-12-20 John J Lee <jjl@pobox.com>
+	* Replaced all usage of seek_wrapper with new class
+	  response_seek_wrapper, which knows about the response class
+	  returned by urllib2.urlopen(), and uses that knowledge to avoid
+	  clobbering all the response methods on .close().  This is a bit
+	  of a hack to make it possible to cache response objects to make
+	  a Browser class.
+	* 0.9:
+	* RFC 2965 is now off by default.
+
+2003-12-18 John J Lee <jjl@pobox.com>
+	* Changed order of to_read comparison in _Util.seek_wrapper.seek.
+	  None was being compared with an integer (which seems, by chance,
+	  not to cause a bug in 2.3, but is certainly wrong).  Thanks to
+	  Jim Jewett.
+
+2003-12-16 John J Lee <jjl@pobox.com>
+	* Fixed bug in CookieJar.clear(): didn't work with three
+	  arguments.
+	* Fixed masses of test failures that had built up because I forgot
+	  to run tests, and because of fix to redirection bug.
+	* Released 0.4.11.
+
+2003-12-14 John J Lee <jjl@pobox.com>
+	* In stable and development versions (0.4.x and 0.9), fixed adding
+	  of Cookie header so it's not left in incorrectly during
+	  redirects.  Also, don't clobber Cookie or Cookie2 headers if
+	  they're already present in the request.  Also also, added
+	  .get_header() and to insulate users of Request against key
+	  duplication between regular and unredirected headers.
+	* Request is now documented to require .add_unredirected_header(),
+	  .has_header(), .get_header() and .iter_headers() methods (but
+	  these are added if missing by RequestUpgradeProcessor (for
+	  compatibility with existing urllib2), so it doesn't actually
+	  matter).  This will break code for people not using urllib2, but
+	  I had to change it because it's needed for the security fix
+	  above.
+	* In 0.9:
+	* Made CookieJar.cookies attribute private.
+	* Moved file-based stuff into FileCookieJar abstract subclass of
+	  CookieJar, and libwww-perl format stuff into LWPCookieJar.
+	  Removed filename and delayload attributes and constructor args
+	  from CookieJar, along with .save(), .load() and .revert().
+	* Changed skip_discard arg to LWPCookieJar.as_lwp_str() to
+	  ignore_discard (inverted meaning), and skip_expired to
+	  ignore_expires.
+
+2003-12-12 John J Lee <jjl@pobox.com>
+	* Cleaned up tests a little bit.
+	* Started 0.9:
+	* Documented HTTPCookieProcessor.cookiejar and
+	  HTTPRefreshProcessor.max_time / .honor_time as public
+	  attributes.
+
+2003-12-06 John J Lee <jjl@pobox.com>
+	* Fixed unicode URL bug, I hope (replaced normalize_path with a
+	  new escape_path function).  Thanks to Ronald Tschalar for
+	  advice.
+	* Started using warnings and logging.  As a result removed
+	  CLIENTCOOKIE_DEBUG switch, added constants getLogger, NOTSET,
+	  INFO, DEBUG, used exactly as per logging module in Python 2.3
+	  (or you can just use logging module direct with 2.3).  Also
+	  added USE_BARE_EXCEPT for old Pythons that don't have warnings
+	  module, so can't turn warnings into errors.
+	* More documentation updates and fixes.
+	* Released 0.4.10.
+
+2003-12-04 John J Lee <jjl@pobox.com>
+	* Fixed a few doc bugs.
+
+2003-12-01 John J Lee <jjl@pobox.com>
+	* Fixed bug with ClientCookie.OpenerDirector.add_handler():
+	  handler methods in base classes are now seen even with old
+	  Python versions.
+	* HTTPEquivProcessor now uses HTMLParser module when available
+	  (should work with XHTML now).
+
+2003-11-29 John J Lee <jjl@pobox.com>
+	* Removed HTTPStandardHeadersProcessor: it's now part of
+	  AbstractHTTPHandler.
+	* Added test for FileHandler.
+
+2003-11-28 John J Lee <jjl@pobox.com>
+	* A bit more work on _urllib_support tests.
+	* In _urllib2_support, cleaned up OpenerDirector.add_handler(),
+	  removed Request.get() (dunno why it was there in the first
+	  place...), renamed Request.has_key() to .has_header().
+	* Got rid of ClientCookie.HTTP_DEBUG and .REDIRECT_DEBUG global
+	  debug switches.  They're replaced by a set_http_debuglevel()
+	  method for HTTP{S,}Handler, and an HTTPRedirectDebugProcessor.
+	* Fixed 1.5.2 compatibility bug which broke ordering of
+	  processors.
+
+2003-11-14 John J Lee <jjl@pobox.com>
+	* Fixed bug where no log message was generated for pre-expired
+	  cookies where no cookie was previously present in the CookieJar.
+
+2003-11-07 John J Lee <jjl@pobox.com>
+	* seek_wrapper.close cleans up reference to read data.
+
+2003-11-03 John J Lee <jjl@pobox.com>
+	* HTTPEquivProcessor's max_time constructor arg can now be None,
+	  meaning no limit.
+	* Added a functional test!  Tests cookies, refresh and http-equiv.
+	  It does depend on an internet web page, though.  I should put up
+	  my own page with some tests, on the SF site...
+
+2003-11-03 John J Lee <jjl@pobox.com>
+	* Bugfix: tests from test_urllib2.py were not run by test.py
+	  script.
+	* More _urllib2_support tests.
+	* Bugfix: Host header is no longer clobbered by
+	  HTTPStandardHeadersProcessor.
+	* Fixed broken processor/handler merge which broke the whole
+	  package.  Need some new functional tests!
+	* Released 0.4.9.
+
+2003-11-02 John J Lee <jjl@pobox.com>
+	* Wrote a few unit tests for _urllib2_support.
+	* Changed a couple of uses of urllib2.Request to
+	  _urllib2_support.Request.
+	* Fixed thoroughly broken HTTPRedirectHandler loop detection,
+	  thanks to new tests!
+	* Added (untested) thread synchronization.
+	* Released 0.4.8.
+
+2003-10-31 John J Lee <jjl@pobox.com>
+	* Fixed missing import in _urllib2_support.py (for
+	  HTTPRefreshProcessor) and 1.5.2-compatibility.  Apparently
+	  nobody's using either...
+
+2003-10-30 John J Lee <jjl@pobox.com>
+	* Fixed implementation of redirection verifiability:
+	  Request.original_url: was actually the URL of the previous
+	  request iin the chain of redirections, not of the origin
+	  request.
+
+2003-10-29 John J Lee <jjl@pobox.com>
+	* The processor and handler interfaces may now be implemented by a
+	  single object.  This makes for more natural handling of things
+	  like response caching.
+
+2003-10-28 John J Lee <jjl@pobox.com>
+	* Rehashed string representations so they behave in a more
+	  standard way.  Cookie._debug_string is gone, to be replaced by a
+	  new __repr__.  The old Cookie.__str__ is gone, to be
+	  reincarnated as the lwp_cookie_str function.  Cookie.__repr__ is
+	  renamed to __repr__.  CookieJar.as_string is renamed as_lwp_str.
+	  CookieJar.__str__ and .__repr__ now simply return a string like
+	  <CookieJar[...]>, where the ellipsis is replaced by a comma-
+	  separated list of str(cookie) or repr(cookie) respectively.
+	* domain_initial_dot is now False where domain_specified is False,
+	  so that __repr__ is unchanged after save/load round-trip.
+
+2003-10-23 John J Lee <jjl@pobox.com>
+	* In DefaultCookiePolicy.set_ok_domain, added "int" to list of
+	  top-level domains for strict_domain, and made string comparison
+	  case-insensitive.
+	* Cookies with missing or invalid expires cookie-attribute are now
+	  treated as session cookies again, on reading Ronald's advice
+	  about this.  Added test so I don't break it again.
+	* Cleaned up CookieTests.test_secure.
+	* Added xreadlines and iterator support to seek_wrapper.
+	* Cleaned up _HeadersUtil.
+	* Resolved long-standing question about /, ?, # and ; and cookie
+	  paths (I was worried about this after reading Mozilla source) by
+	  reading Mozilla bug 156725.  Nothing needed changing.
+
+2003-10-23 John J Lee <jjl@pobox.com>
+	* Fixed some confusing MSIECookieJar doc bugs.
+	* Fixed delayloading bug that might cause set cookies to get
+	  clobbered by those on disk.
+	* Released 0.4.7a.
+
+2003-10-22 John J Lee <jjl@pobox.com>
+	* MSIECookieJar bug fixes: do case-insensitive search to find
+	  cookie data (username was appearing in lower case), be more
+	  liberal about index.dat 'magic'.  Also fixed an exception
+	  message that gave a UnicodeDecodeError.
+	* Released 0.4.6a.
+
+2003-10-21 John J Lee <jjl@pobox.com>
+	* Fixed Netscape parsing bug where cookie-attributes that should
+	  have a value but don't would end up with a None key.  Also,
+	  parse_ns_headers now works properly for empty headers, and no
+	  longer drops expires cookie-attribute on the floor when the
+	  value is invalid: instead, None is returned as the expires
+	  value.
+	* _normalized_cookie_tuples is now more robust to bad Set-Cookie
+	  and Set-Cookie2 headers.
+	* Cleaned up delayloading.  All methods should now work, but
+	  anything that causes iteration over all cookies will not cause
+	  loading of delayloaded cookies from disk.  If you really want to
+	  iterate over *all* cookies (rather than just those currently in
+	  memory), call read_all_cookies.
+
+2003-10-20 John J Lee <jjl@pobox.com>
+	* Split up set_ok and return_ok methods from DefaultCookiePolicy
+	  to make it easier to inherit its implementation.
+
+2003-10-10 John J Lee <jjl@pobox.com>
+	* Corrected domain-blocking documentation ("acme.com" doesn't
+	  match ".acme.com").  Also, reversed the ordering (x matches y ->
+	  y matches x), to agree with that actually used in the code
+	  (since the domain-matching algorithms used are not commutative,
+	  this was confusing).
+	* Implemented strict_domain argument to DefaultCookiePolicy
+	  constructor.
+
+2003-10-03 John J Lee <jjl@pobox.com>
+	* Fixed loading of cookies with no name (previously, the name and
+	  value were reversed).
+
+2003-09-21 John J Lee <jjl@pobox.com>
+	* Missing MSIE cookie files are now skipped, rather than raising
+	  an exception (unless load_cookie_data is used directly, which
+	  still raises IOError if the file is not found).  Thanks to Todd
+	  Whiteman.
+	* Released 0.4.5a.
+
+2003-08-16 John J Lee <jjl@pobox.com>
+	* Fixed MSIECookieJar._cookies for_domain (dict lookup instead of
+	  dict.get).  Also added an optional username argument to load and
+	  load_from_registry.  Thanks to Mark Carter for bug reports.
+	* Released 0.4.4a.
+
+2003-08-13 John J Lee <jjl@pobox.com>
+	* Released 0.4.3a.
+
+2003-08-10 John J Lee <jjl@pobox.com>
+	* Drastically reduced the requirements on response objects.
+
+2003-07-28 John J Lee <jjl@pobox.com>
+	* Added a couple of missing return False's to domain_return_ok and
+	  return_ok.  Also, verifiability logic was too strict, due to
+	  return False in wrong place.  Thanks to Armand Lynch for the bug
+	  report.
+	* Documented cookies attribute of CookieJar as being not publicly
+	  writable.  This was just an oversight.  Your code won't
+	  currently break if you do this, but it's certainly a bad idea.
+
+2003-06-23 John J Lee <jjl@pobox.com>
+	* Seekable response wrapper stuff changed so it doesn't trip over
+	  the typecheck in pre-2.3 urllib2s (actually I did this ages ago,
+	  and forgot to record it).
+	* Fixed test for old-style issubclass.
+
+2003-06-23 John J Lee <jjl@pobox.com>
+	* Much of AbstractHTTPHandler has been rewritten in terms of
+	  processors (a bit like handlers).
+	* MozillaCookies.load now gives a more helpful exception message
+	  (thanks to 'Steve').
+	* Another fix to MozillaCookies: first field can be empty, so
+	  don't lstrip (thanks to 'Steve').
+	* Response objects are no longer seekable by default.  Pass
+	  SeekableProcessor to build_opener if you want that.
+	* HTTPRefreshProcessor now has some constructor arguments to
+	  allow non-zero time Refreshes, and to control whether or not
+	  the requested pause is actually honoured, or just skipped.
+
+2003-06-17 John J Lee <jjl@pobox.com>
+	* Applied some bugfixes for AbstractHTTPHandler from Python CVS.
+	  This fixes proxy support.
+	* Renamed Cookies class to CookieJar (and analogously for
+	  MozillaCookies and MSIECookies).  This was inevitable given the
+	  existence of the Cookie class -- too confusing otherwise.
+
+2003-06-14 John J Lee <jjl@pobox.com>
+	* Fixed bug in redirect code that would have allowed infinite
+	  loop.
+	* Added support for automatically adding Referer HTTP header.  I
+	  was really getting tired of adding that all the time...
+	* Cleaned up redirect code.
+	* Added some more debugging switches.
+	* Changed license to BSD, so I can use a Python Cookbook recipe.
+	  The only difference is the addition of a non-endorsement clause.
+	* Changed all raise statements to raise instances, not classes.
+
+2003-06-13 John J Lee <jjl@pobox.com>
+	* 0.4.2a changes (these were the only changes from 0.4.1a to
+	  0.4.2a; VERSION attribute was incorrectly set to "0.4.1a" in the
+	  0.4.2a release).
+	* Fixed CookiePolicy.path_return_ok: raise True --> return True!
+	* Fixed HTTP-EQUIV support: moved CHUNK to _urllib2_support.py.
+	* Added missing imports to _urllib2_support.py.
+	* Pychecker found a bug in _normalized_cookie_info (comparison
+	  instead of assignment).
+	* Pychecker found a bug in _cookie_from_cookie_tuple (non-existent
+	  local in debug statement).
+	* Pychecker found a bug in _MSIECookies and _MozillaCookies:
+	  missing import of MISSING_FILENAME_TEXT.
+	* Pychecker found a bug in _MSIECookies._really_load: non-existent
+	  local in assert statement.
+	* Pychecker found a bug in _urllib2_support.HTTPRedirectHandler:
+	  non-existent local in raise statement.  Aaaaghhh...
+	* Redirect now allows return to a url previously seen, because
+	  that doesn't necessarily imply a loop if HTTP-EQUIV and 30x
+	  occur in a single redirect sequence.
+	* Released 0.4.2a.
+
+2003-06-08 John J Lee <jjl@pobox.com>
+	* 0.4.1a changes:
+	* Simplified pointlessly complicated imports (having read Guido's
+	  import docs, finally).
+	* Simplified add_cookie_header, while preserving efficiency for
+	  MSIECookies delayload mode (to stop loading lots of cookie files
+	  from disk unless necessary).
+	* Uploaded porting docs.
+	* Uploaded example code (also uses ClientForm).
+	* Fixed a few remaining local references that lynx was writing in
+	  README.txt.
+	* Cleared up weird file permissions.
+	* A few more doc fixes to reflect changes.
+	* Released 0.4.1a.
+
+2003-06-08 John J Lee <jjl@pobox.com>
+	* 0.4.1a changes:
+	* Netscape parser now works for Mixed-case Netscape cookie-
+	  attributes.
+	* Netscape parser now accepts "port" (no equals sign), and
+	  cookies with no name (again, no equals sign).
+	* Suddenly realised that the port attribute of urllib2.Request
+	  objects is always None -- it's unused.  Added request_port
+	  function.
+	* Fixed path ordering of returned cookies (they were only ordered
+	  within each domain, not overall).  Happily, this change made the
+	  code much clearer, too.
+	* Improved parse_ns_headers whitespace handling.
+	* parse_ns_headers: expires cookie-attribute can now be quoted.
+
+2003-06-06 John J Lee <jjl@pobox.com>
+	* 0.4.1a changes:
+	* Split str2time into httpstr2time and isostr2time.  str2time
+	  is now an alias for httpstr2time.
+	* Fixed MSIECookies 1.5.2-compatibility bug.  Hmm, must install
+	  1.5.2 on Windows...
+	* Cleared up confusion between third-party and unverifiable
+	  transactions in docs.
+
+2003-06-03 John J Lee <jjl@pobox.com>
+	* Fixed trivially broken MSIECookies cookie loading (was
+	  attempting to call long() on value and domain/path).
+	* 0.4.1a changes:
+	* Fixed handling of Max-Age=0 (actually, I think it was correct
+	  before, but fragile).  Max-Age=0 means discard (old and new)
+	  cookie.
+	* MozillaCookies.save now saves expires as "" if cookie.expires is
+	  None.
+	* Complete rehash of domain-matching code, to follow Mozilla and
+	  IE for V0 cookies.
+	* MozillaCookies.save and .load now agree with each other, with
+	  the Cookies class and with Mozilla about domain handling.
+	* Changed eff_request_host so .local is only added for HDNs (ie.
+	  not for IP addresses) -- since this is presumably what will be
+	  in RFC 2965 errata.
+	* Removed requirement that Netscape Domain cookie-attribute must
+	  not be IP address.
+	* Renamed test_cookies.LWPTests.test_9 (there were two of them) so
+	  the second doesn't clobber the first!
+	* Returned Domain attribute must now exactly match that originally
+	  set, including presence or otherwise of initial dot, according
+	  to draft RFC 2965 errata.
+	* Added some Netscape strictness switches.
+	* RFC 2109 cookies are now treated as RFC 2965 cookies (but still
+	  parsed by Netscape parser).
+
+2003-06-02 John J Lee <jjl@pobox.com>
+	* 0.4.1a changes:
+	* Renamed Cookies.clear_temporary_cookies to
+	  clear_session_cookies.
+	* Fixed clear_session_cookies -- was incorrectly clearing expired
+	  cookies, too.  Added is_expired method to Cookie class.
+	* Fixed MSIECookies delayloading (still needs testing).
+	* Cookies.load, .restore and MSIECookies.load_from_registry
+	  methods now have ignore_discard and ignore_expires arguments.
+	* Added Cookies.clear_expired_cookies method.
+
+2003-05-27 John J Lee <jjl@pobox.com>
+	* Uploaded 0.4.0a, in case the person who grumbled about lack
+	  of thread-safety wants to write a patch.
+	* MozillaCookies is currently broken (no doubt other stuff too)
+	  in 0.4.0a -- and slightly broken in 0.3.4b, for that matter.
+	* Uploaded 0.3.5b, with fixed NetscapeCookies (the class that's
+	  renamed MozillaCookies in 0.4.0a), thanks to a demi-nonymous
+	  'Steve'.
+
+2003-05-22 John J Lee <jjl@pobox.com>
+	* 0.4.0a changes:
+	* Removed autosave constructor arg from Cookies class, and
+	  removed __del__ methods.  Also removed ignore_discard and
+	  ignore_expires args from constructor and moved to save
+	  method.
+	* MozillaCookies and Cookies are now consistent on expires /
+	  discard behaviour on saving -- they both follow the
+	  ignore_expires and ignore_discard args.
+	* Cookies objects no longer automatically try to load cookies
+	  when you supply a filename to the cookies constructor, and
+	  the save and load methods no longer alter the value of the
+	  filename attribute.
+	* delayload is now a public attribute.
+	* All files are now explicitly close()d in finally: blocks.
+	* Another minor redirect change to synchronise with current SF
+	  patch (still not applied!).  The actual behaviour is
+	  unchanged.
+
+2003-05-18 John J Lee <jjl@pobox.com>
+	* 0.4.0a changes:
+	* Fixed Cookie2 header -- before, it wouldn't have been sent
+	  unless the first matching cookie was V0, and V2 (heaven forfend)
+	  would not have caused it to be sent.  Really, though, the whole
+	  issue of multiple versions is still to be clarified in RFC 2965
+	  errata.
+	* Add set_cookie_if_ok method, which works like set_cookie, but
+	  only if policy.set_ok method says it's OK.
+	* Moved check for cookies starting with $ to set_ok, limited it to
+	  V0 cookies, and removed check for empty cookies.
+	* Added accept list -- this is a 'whitelist'.  Blocked domains are
+	  considered first, then accepted domains.
+	* Changed domain match algorithm for blocking (and accepting)
+	  cookies.  I've copied Ronald Tschalar's algorithm, which is
+	  better than mine, because it allows more control.  Now a domain
+	  in a block / accept list like "acme.com" with no initial dot
+	  only matches "acme.com" (not as before), but ".acme.com" (with
+	  initial dot) matches "good.acme.com" and "bad.acme.com" (as
+	  before).  Empty domains no longer have any special meaning.
+	* Another change to file format -- added 'domain_dot' which
+	  records whether or
+
+2003-05-16 John J Lee <jjl@pobox.com>
+	* 0.4.0a changes:
+	* CommentURL and Comment are now exposed as the comment_url and
+	  comment attributes of the Cookie class.  They are no longer part
+	  of the Cookie.rest dictionary.  This is also reflected in the
+	  string representation of the Cookies class and of the Cookie
+	  class.
+	* Removed scan method, in favour of iterator (& 1.5.2 __getitem__
+	  hackery).
+
+2003-05-13 John J Lee <jjl@pobox.com>
+	* 0.4.0a changes:
+	* Renamed Cookies.clear method key argument to name.
+	* Renamed 'redirect' arguments of Cookies.add_cookie_headers and
+	  .extract_cookies methods to 'unverifiable'.
+	* Even if there are some Netscape cookies in a response, still
+	  check path according to RFC 2965 rules for version 1 cookies.
+	* Created new Cookie class.
+	* set_cookie method now takes a Cookie as its argument.  The old
+	  method signature was actually broken (there was no way to
+	  specify whether the domain and port were specified in the HTTP
+	  headers), so this is unavoidable.
+	* Cookies.cookies three-level dict now contains Cookie instances
+	  as its leaf values, rather than sequences.
+	* Major code reorganisation: moved all accept / reject logic into
+	  nice shiny new CookiePolicy classes.  The Cookies class is now
+	  simpler.  :-)
+	* Removed blocked_domains arg from Cookies class.  This is now
+	  handled by a CookiePolicy object.
+	* Removed netscape_only and hide_cookie2 args from Cookies
+	  constructor.  This is now handled by a CookiePolicy object.
+	* RFC 2965 port bug fixed: before, a port cookie-attribute with no
+	  value was incorrectly returned with a value.
+	* Changed Cookies class' save / load format to remember whether
+	  or not port was specified.  Loading old-format files containing
+	  RFC 2965 cookies (if any such even exist, which is highly
+	  unlikely) may now cause ClientCookie to get returned port values
+	  wrong in a slighly different way to how it got them wrong
+	  before. ;-)  In any case, you almost certainly only have
+	  Netscape cookies, in which case the two file formats are
+	  degenerate.
+
+2003-05-09 John J Lee <jjl@pobox.com>
+	* Simplified and refactored _HTTPDate and tests.
+
+2003-05-06 John J Lee <jjl@pobox.com>
+	* Fixed parsing (by NetscapeCookies) of cookies.txt with empty
+	  cookie value.
+
+2003-04-30 John J Lee <jjl@pobox.com>
+	* Fixed MSIECookies -- apparently NT and XP, and IE 5 and 6 *do*
+	  store cookies in the same format.  When hit 0x0df0ad0b padding,
+	  just ignore it and read again instead of deciding that the
+	  sector size is wrong.
+	* Fixed MSIECookies.__setattr__, which was too strict about
+	  autosave.
+	* Added base URL to README.html, so README.txt comes out with http
+	  URL references rather than pointers to files local to my
+	  machine.
+	* Released 0.3.4b.
+
+2003-04-29 John J Lee <jjl@pobox.com>
+	* Small change to HTTPRedirectHandler: 301 from a POST is now
+	  allowed, and redirected as a GET.
+	* More minor documentation fixes.
+	* Hmm, cleaning up the tests seems to have revealed a whole bunch
+	  of 1.5.2 compatibility bugs.  Not sure what was wrong with old
+	  test running system, but don't care.  Fixed bugs.
+	* Added INSTALL file to MANIFEST.in -- hadn't noticed it was
+	  missing from the distribution.
+	* Released 0.3.3b.
+
+2003-04-28 John J Lee <jjl@pobox.com>
+	* Cleaned up MSIE code, and got it working on NT.  Hopefully it
+	  still works on XP...
+	* Cleaned up cookies tests, and ported all tests to use unittest.
+	* Minor documentation fixes.
+
+2003-03-27 John J Lee <jjl@pobox.com>
+	* Applied Eric Woudenberg's fixes to previously untested
+	  MSIECookies code (Eric is using Windows XP).
+
+2003-03-23 John J Lee <jjl@pobox.com>
+	* Added documentation explaining the reasons for the existence of
+	  the various cookie protocols.
+	* Released 0.3.2b.
+
+2003-03-10 John J Lee <jjl@pobox.com>
+	* Fixed documentation bug (changing User-Agent header involves
+	  setting addheaders, not add_headers, attribute on
+	  urllib2.OpenerDirector).  Thanks to Christoph Schwarz.
+
+2003-03-05 John J Lee <jjl@pobox.com>
+	* Fixed 1.5.2 compatibility bug.
+
+2003-02-17 John J Lee <jjl@pobox.com>
+	* Released 0.3.1b.
+
+2003-02-16 John J Lee <jjl@pobox.com>
+	* Removed Netscape three-dots-for-non-special-toplevel-domains
+	  check, again on the advice of Ronald Tschalar, who informs me
+	  this is another place where browsers don't follow Netscape spec.
+	* Fixed tests so they work with new request_host function and
+	  insistence on version attribute in Set-Cookie2 header.
+	* Changes to domain-matching code.  Host prefixes are allowed to
+	  contain a dot for Netscape cookies.  Code dealing with
+	  dot-normalisation and check for embedded dots now explicitly
+	  follows RFC 2965 algorithm -- I can't be bothered to figure out
+	  whether the end result is equivalent in general to the way way
+	  it was before.  I feel no guilt about this :)
+	* add_cookie_header now checks for request absoluteURI with
+	  missing abs_path (as defined by RFC 2396) and corrects it if
+	  necessary.
+	* IP addresses in the domain attribute of Set-Cookie are now only
+	  illegal for Netscape cookies.
+	* Cookies.blocked_domains now returns an empty tuple rather than
+	  None, as the docstring says it should.
+
+2003-02-12 John J Lee <jjl@pobox.com>
+	* Altered request_host, to match my interpretation of RFCs 2965
+	  and 2616 (Host: header no longer checked).
+
+2003-02-11 John J Lee <jjl@pobox.com>
+	* Removed the Netscape bad-path hack.  Not convinced it's
+	  generally useful, or even non-harmful.
+	* Cookies.extract_cookies now disallows Set-Cookie2 headers with
+	  no Version attribute.
+
+2003-02-10 John J Lee <jjl@pobox.com>
+	* Made MSIECookies importable from ClientCookie package.
+	* Fixed Cookies.__len__!
+
+2003-02-08 John J Lee <jjl@pobox.com>
+	* Removed 'del True, False' from __init__.py -- 2.3 doesn't like
+	  it, understandably!  Thanks to Martijn Faasen.
+	* Cookie headers are now added for two-component domain names like
+	  lwn.net (moved checking for number of dots to extract_cookies,
+	  and made the check specific to Netscape cookies).  Thanks to
+	  Martijn Faasen.
+	* Fixed Cookies.revert method, which didn't always leave object
+	  state unchanged on failure.
+	* Fixed netscape_only mode of Cookies class in the case where
+	  RFC 2965 Set-Cookie2 headers are present (Set-Cookie2 now never
+	  clobbers Set-Cookie cookies in netscape_only mode).
+	* Assorted minor refactoring.
+
+2003-02-05 John J Lee <jjl@pobox.com>
+	* Made blocked_domains attribute private again, added accessor
+	  methods (to avoid mutability issues).
+	* Released 0.3.0b.
+
+2003-02-03 John J Lee <jjl@pobox.com>
+	* Fixed handling of quoted Netscape cookies values.  Thanks to Rob
+	  Dunstan for the bug report.
+
+2003-02-02 John J Lee <jjl@pobox.com>
+	* Added install_opener to public interface exported by __init__ --
+	  it should have been there in 0.2.0, of course.
+	* Fixed several bugs in lazily-seekable response code, and added
+	  tests.
+
+2003-01-03 John J Lee <jjl@pobox.com>
+	* Fixed bug in interaction of Netscape and RFC 2965 cookies.
+	  Previously, RFC 2965 cookies overwrote Netscape cookies if both
+	  cookie name and value matched.  Now, domain, path and name must
+	  match (this was broken in original Perl). [2003-03-27 But note
+	  that this is one of the topics currently under discussion on
+	  http-state mailing list for the RFC 2965 errata]
+	* Fixed bug in overwriting of cookies with new cookies: domain
+	  matching is now case-insensitive (this was broken in original
+	  Perl).
+	* Removed incorrect information about urllib2 (OpenerDirector does
+	  not have an attribute named server_version).
+	* Added optional HTTP-EQUIV handling (in which META HTTP-EQUIV
+	  headers in HTML are transparently read and added to your regular
+	  HTTP headers).
+	* Added optional HTTP Refresh header handling.  If a Refresh
+	  header is present and has zero refresh time, it is translated
+	  into a 302 redirect.  Refresh headers with non-zero refresh
+	  times are ignored.
+	* Made seekable responses optional (but on by default).  If you're
+	  using HTTP-EQUIV handling, seekable responses are required.  At
+	  the moment, the parser for HTTP-EQUIV will slurp in the whole
+	  file unless the </HEAD> closing tag is explicitly present.
+	* HTTPHandler and HTTPSHandler constructors now have options to
+	  control the above: seekable_responses, handle_http_equiv and
+	  handle_refresh.
+
+2003-01-02 John J Lee <jjl@pobox.com>
+	* Refactored Cookies.add_cookie_header and .extract_cookies
+	  methods.  Now I have some hope of checking the code is
+	  correct...
+	* Updated MSIE support with bug fixes from Johnny Lee, the author
+	  of the MSIE Perl code.
+	* Made blocked_domains a public attribute.
+	* Fixed quoting of backslashes in cookie values (previously, they
+	  were incorrectly left unquoted).
+	* Improved documentation.
+
+2002-12-19 John J Lee <jjl@pobox.com>
+	* Added first attempt at Microsoft Internet Explorer (MSIE) cookie
+	  support.  Not working yet.
+
+2002-12-18 John J Lee <jjl@pobox.com>
+	* Response objects now have lazy read, readline, readlines and
+	  seek methods.
+	* Removed Apple Mac-specific code, since it has never been tested.
+	  If anybody wants it back, let me know.
+	* Fixed 1.5.2-compatibility bug (calendar.timegm not available).
+
+2002-12-13 John J Lee <jjl@pobox.com>
+	* Improved README.html.
+	* Removed Python 1.5.2-compatible urllib2/urllib.  Now separately
+	  downloadable, because useful for all three web client modules
+	  (ClientCookie, ClientForm, ClientTable).
+
+2002-11-19 John J Lee <jjl@pobox.com>
+	* Released 0.2.0b.
+
+2002-11-17 John J Lee <jjl@pobox.com>
+	* Removed README, created README.html and INSTALL.  README mostly
+	  just restated what was in the web page, so README.html is now
+	  just a copy of the web page.
+
+2002-11-16 John J Lee <jjl@pobox.com>
+	* Removed _TimeLocal.py.  :-)
+	* Changed license to MIT (from Perl Artistic).  Thanks, Gisle.
+
+2002-10-13 John J Lee <jjl@pobox.com>
+	* Removed cookies argument from urlopen, and added install_opener
+	  function.  This is the way urllib2 does things, and is also
+	  simpler.  This won't change again, honest!
+	* Added documentation to explain how to change User-Agent header,
+	  and how to provide a cookies instance in the new way.
+	* Improved documentation layout, and corrected a few minor
+	  mistakes in docs.
+
+2002-10-11 John J Lee <jjl@pobox.com>
+	* Fixed silly Python 2.3 forwards-compatibility bug (True / False
+	  constants were defined, overwriting the new builtin versions in
+	  2.3).
+
+2002-10-05 John J Lee <jjl@pobox.com>
+	* Fixed handling of "secure" attribute for Netscape protocol,
+	  which was broken in original Perl code (thanks to Rob Hall and
+	  Levente Sandor for bug report and fix respectively).
+	* Fixed debug switches, which were in the wrong place.
+	* Fixed revert method of Cookies class, which didn't raise IOError
+	  when loading failed.
+	* Fixed trivially-broken 1.5.2-compatibility.
+	* Fixed quick exit for no-cookies case.
+	* Removed spurious print statement from _HTTPDate.py.
+	* Removed non-functional mxDateTime `support', until I manage to
+	  get mxDateTime installed, at least.
+	* Improved documentation a little (including removing some
+	  disinformation about the differences in cookie expiration
+	  between Cookies and NetscapeCookies).
+	* 0.1.1b release.
+
+2002-07-12 John J Lee <jjl@pobox.com>
+	* Removed stupid cookie_kwargs arguments to urlopen, HTTPHandler
+	  and HTTPSHandler, and replaced with a cookies argument that
+	  lets you simply provide your own Cookies instance.  This allows
+	  you to get at the cookies, for example.
+	* Fixed redirect fix (thanks to Jeremy Hylton for pointing this
+	  out).  See Python bug #549151 on www.sourceforge.net.  30x
+	  redirects should now be properly handled for all x (which may
+	  mean leaving them for the user of ClientCookie to deal with, by
+	  raising an exception).  This is a fix to the Python standard
+	  library, and is a separate issue from that of cookies being
+	  turned off during redirections when using the RFC 2965 protocol.
+	  This fix was also applied to the 1.5.2 backport.
+	* Fixed negative expiration time case (thanks to Johann Hibschmann
+	  and David Lashar for bug reports).
+	* 0.1.0b release.
+
+2002-05-31 John J Lee <jjl@pobox.com>
+	* Added import types in _ClientCookie.py.
+	* Used time-machine to fix ClientCookie.VERSION (was erroneously
+	  "0.0.6b" in this release; was also wrong in README).
+	* 0.0.7b release.
+
+2002-05-27 John J Lee <jjl@pobox.com>
+	* RFC 2965 cookie handling may now be switched off entirely.  This
+	  is useful because few browsers implement it, so it is likely
+	  that many servers incorrectly implement it.  This is also
+	  useful because ClientCookie does not yet fully implement
+	  redirects with RFC 2965 cookies.
+	* The redirect argument to Cookies.add_cookie_header and
+	  Cookies.extract_cookies is going to stay: you are allowed to use
+	  it now.
+	* Arguments can now be passed to the Cookie constructor when using
+	  urlopen, HTTPHandler and HTTPSHandler.
+	* Added domain blocking.
+	* Improved documentation.
+	* Applied redirect+POST bugfix (bug #549151 on SF) to 1.5.2
+	  back-port of urllib2.py (not necessary for correct functioning
+	  of ClientCookie itself, since this is also fixed elsewhere, in
+	  _ClientCookie; this will only affect anyone who is using this
+	  urllib2 separately from ClientCookie).
+	* Reversed ChangeLog time ordering!
+	* Changed version numbering system to integer triple x.y.z from
+	  fixed-point x.yz: this release is 0.0.6b, not 0.06b.
+	* 0.0.6b release.
+
+2002-05-06 John J Lee <jjl@pobox.com>
+	* Back-ported to Python 1.5.2.
+	* Fixed Windows issues with _HTTPDate and _TimeLocal; all tests now
+	  pass on both Unix and Windows (thanks to Irmen de Jong for bug
+	  reports).
+	* Tested with Python versions 1.5.2, 2.0.0, 2.1.1 and 2.2.0.
+	* Set line endings to Unix convention.
+	* 0.05b release.
+
+2002-05-01 John J Lee <jjl@pobox.com>
+	* Fixed _HTTPDate to give up for timezones given as strings, unless
+	  mxDateTime is installed (mxDateTime support is untested).
+	* Removed use of strptime -- Windows doesn't have it.
+	* Fixed use of localtime and gmtime in _HTTPDate and _TimeLocal for
+	  2.0-compatibility.
+	* Fixed _host again (properly this time, I hope).
+	* Changed tests to reflect work-around for incorrect Netscape path
+	  attributes.
+	* 0.04b release.
+
+2002-04-26 John J Lee <jjl@pobox.com>
+	* Interface is stable.
+	* Has now been used in anger, by me.
+	* Fixed _ClientCookie._host function (now works with proxies).
+	* Fixed HTTPHandler, etc (handling of redirections is not correct yet,
+	  though).
+	* Work-around for Netscape cookies with bad paths.
+	* Automatic redirections (with urllib2) now work (for Netscape cookies
+	  only).
+	* Handling of RFC 2965 cookies is currently turned off during automatic
+	  redirections, until I figure out exactly which cookies should be
+	  blocked.
+	* Included fixed version of HTTPRedirectHandler: does GET instead of
+	  POST during redirects, as required by RFC 1945 (bug #549151 on SF).
+	* str2time function is now importable directly from ClientCookie.
+	* 0.03b release.
+
+2002-04-23 John J. Lee <jjl@pobox.com>
+	* Renamed top-level directory to ClientCookie, from LWPy, and added
+	  names to __init__.py, so eg. from ClientCookie import Cookies works.
+	  ClientCookie.py is now _ClientCookie.py.
+	* Renamed all private modules to have initial underscore.
+	* Fixed _HeadersUtil bugs.
+	* Removed all `return self's from Cookie.
+	* Return values and exceptions raised are more-or-less okay now, I
+	  think.
+	* urlopen, HTTPHandler, etc. now actually work.
+	* Miscellaneous cleanup and bug fixes.
+	* Tried actually using the thing on the internet a few more times.
+	* 0.02a release.
+
+2002-04-19 John J. Lee <jjl@pobox.com>
+	* Managed to get a cookie out of http://uk.yahoo.com/, so something
+	  must be working...
+	* Initial 0.01a release.

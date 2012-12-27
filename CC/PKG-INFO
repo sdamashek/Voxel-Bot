@@ -1,0 +1,39 @@
+Metadata-Version: 1.0
+Name: ClientCookie
+Version: 1.3.0
+Summary: Client-side HTTP cookie handling.
+Home-page: http://wwwsearch.sourceforge.net/ClientCookie/
+Author: John J. Lee
+Author-email: jjl@pobox.com
+License: BSD
+Download-URL: http://wwwsearch.sourceforge.net/ClientCookie/src/ClientCookie-1.3.0.tar.gz
+Description: ClientCookie is a Python module for handling HTTP cookies on the
+        client side, useful for accessing web sites that require cookies to be
+        set and then returned later.  It also provides some other (optional)
+        useful stuff: HTTP-EQUIV and Refresh handling, automatic adding of the
+        Referer [sic] header, robots.txt observance and lazily-seek()able
+        responses.  These extras are implemented using an extension that makes
+        it easier to add new functionality to urllib2 (now part of urllib2, as
+        of Python 2.4).  It has developed from a port of Gisle Aas' Perl
+        module HTTP::Cookies, from the libwww-perl library.
+        
+Platform: any
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: BSD License
+Classifier: License :: OSI Approved :: Zope Public License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Internet
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: Browsers
+Classifier: Topic :: Internet :: WWW/HTTP :: Site Management
+Classifier: Topic :: Internet :: WWW/HTTP :: Site Management :: Link Checking
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Software Development :: Testing
+Classifier: Topic :: Software Development :: Testing :: Traffic Generation
+Classifier: Topic :: System :: Networking :: Monitoring
+Classifier: Topic :: System :: Systems Administration

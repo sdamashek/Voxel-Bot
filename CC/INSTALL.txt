@@ -1,0 +1,78 @@
+ClientCookie installation instructions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Dependencies
+~~~~~~~~~~~~
+
+Python 2.0 or above is required, and urllib2 is recommended.  Python
+2.0 and above have urllib2 in the standard library, but the version of
+urllib2 supplied with Python 2.0 is too old.  If you're using Python
+2.0, get the version from Python 2.1 (available from the source
+distribution or CVS from http://www.python.org/).
+
+Installation
+~~~~~~~~~~~~
+
+To install the package, run the following command:
+
+ python setup.py build
+
+then (with appropriate permissions)
+
+ python setup.py install
+
+
+Alternatively, just copy the whole ClientCookie directory into your
+Python path (eg. unix: /usr/local/lib/python2.2/site-packages,
+Windows: C:\Python21, or C:\Python22\Lib\site-packages).  That's all
+that setup.py does.  Only copy the ClientCookie directory that's
+inside the distributed tarball / zip archive, not the entire
+ClientCookie-x.x.x directory!
+
+
+To run the functional tests (which DO access the network):
+
+ python functional_tests.py
+
+To run the unit tests (which DO NOT access the network):
+
+ python test.py
+
+This runs the unit tests against the source files extracted from the
+package.  To run them against the installed copy of ClientCookie:
+
+ python test.py -i
+
+For help on other unit test options:
+
+ python test.py --help
+
+
+If you're using a pre-2.1 version of Python, you'll need to get
+unittest.py (from http://pyunit.sourceforge.net) to run the tests.
+
+If you run the tests on an Apple, or other non-unix, non-Windows
+machine, please mail me the output along with details of the system
+you ran them on.
+
+Bugs and comments to jjl@pobox.com.
+
+
+NO WARRANTY
+
+THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+Copyright Notices
+
+  (C) 2002-2004 John J. Lee.  All rights reserved.
+  (C) 1995-2001 Gisle Aas.  All rights reserved.   (Original LWP code)
+  (C) 2002-2003 Johhny Lee.  All rights reserved.  (MSIE Perl code)
+
+This code in this package is free software; you can redistribute it
+and/or modify it under the terms of the BSD or ZPL licenses (see the
+file COPYING.txt).
+
+John J. Lee <jjl@pobox.com>
+March 2006
