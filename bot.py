@@ -6,8 +6,7 @@ import re
 from logininfo import * #import various libraries and the login info
 def getCountThingy():
     currentTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", (time.gmtime(time.time()-300))) #Format time according to MediaWiki API Specifications
-    gmtTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    x = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+currentTime+"&rcend="+gmtTime+"rclimit=500&rcdir=older&rcprop=comment&format=xml" #Define RecentChanges Query
+    x = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+currentTime+"&rclimit=500&rcdir=older&rcprop=comment&format=xml" #Define RecentChanges Query
     data = url.urlopen(x).read() #Make the request
     data = data.lower() #Make everything lowercase for ease of parsing
     count = int(round(((data.count("revert")-data.count("reverted good faith")-data.count("reverting good faith")-data.count("help:reverting"))/5.0)+1)) #Find the amount of hits of the word "revert" then subtract good faith and duplicate occurances, divide by 5 to average, and add 1 so it rounds up.
