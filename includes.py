@@ -6,7 +6,7 @@ from xml.dom import minidom
 def classifyEdit(summary):
 	summary = summary.lower()
 	vandalism = ["revert", "rv "]
-	notVandalism = ["good faith", "agf", "unsourced", "unreferenced", "self", "speculat", "original research", "rv tag", "typo"]
+	notVandalism = ["good faith", "agf", "unsourced", "unreferenced", "self", "speculat", "original research", "rv tag", "typo", "incorrect"]
 	for i in notVandalism:
 		if i in summary:
 			return False
