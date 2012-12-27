@@ -14,6 +14,7 @@ def getCountThingy():
     totalEdits = int(round(data.count('<rc type')/5.0)) #Calculate total edits in same manner (temp fix)
     return (totalEdits, count) #Return a tuple of the results
 theTuple = getCounts() #Define tuple as array
+open("report.txt", "a").writelines(getSummaries(True))
 print "Edit Per Minute: ", theTuple[0] #Output Edits per Minute to Output Screen for Debugging
 print "RV Per Minute: ", theTuple[1] #Same, but for reverts
 a = open("bot.txt") #open connection to the previous value file, bot.txt
