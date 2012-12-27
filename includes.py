@@ -15,10 +15,10 @@ def classifyEdit(summary):
 	return False
 def getSummaryList():
 	currentTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", (time.gmtime(time.time()-300))) #Format time according to MediaWiki API Specifications
-    x = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+currentTime+"&rcend="+time.strftime("&Y-&m-&dT%H:%M:%SZ", time.gmtime())+"&rclimit=500&rcdir=newer&rcprop=comment&format=xml" #Define RecentChanges Query
-    data = url.urlopen(x).read() #Make the request
-    data = data.lower() #Make everything lowercase for ease of parsing
-    dom = minidom.parseString(data)
+	x = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+currentTime+"&rcend="+time.strftime("&Y-&m-&dT%H:%M:%SZ", time.gmtime())+"&rclimit=500&rcdir=newer&rcprop=comment&format=xml" #Define RecentChanges Query
+	data = url.urlopen(x).read() #Make the request
+	data = data.lower() #Make everything lowercase for ease of parsing
+	dom = minidom.parseString(data)
 	changes = dom.getElementsByTagName("rc")
 	return [i.attributes['comment'].value for i in changes]
 def getCounts():
