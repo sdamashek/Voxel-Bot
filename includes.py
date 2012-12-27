@@ -14,7 +14,7 @@ def classifyEdit(summary):
 		if i in summary:
 			if summary.count("*/")==0:
 				return True
-			else if i not in summary.split("*/")[1]:
+			elif i not in summary.split("*/")[1]:
 				return False
 			return True
 	return False
