@@ -2,6 +2,7 @@ from ClientCookie import *
 import time
 import urllib2 as url
 import urllib
+from xml.dom import minidom
 def classifyEdit(summary):
 	summary = summary.lower()
 	vandalism = ["revert", "rv"]
