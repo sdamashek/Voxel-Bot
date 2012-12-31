@@ -44,8 +44,8 @@ if str(theTuple[0]) + " " + str(theTuple[1]) not in b:
 	print "Template:"
 	edit = """{{{{#if:{{{style|}}}|wdefcon/styles/{{{style}}}|{{{prefix|User:Zsinj/}}}Wdefcon}}
 |level  = {{WikiDefcon/levels|"""+str(theTuple[1])+"""}}
-|sign   = ~~~~
-|info   = """ + str(theTuple[0]) + "/" + str(theTuple[1])+ """ according to VoxelBot.
+|sign   = ~~~~~
+|info   = """ + str(theTuple[0]) + "/" + str(theTuple[1])+ """ according to ~~~
 |align  = {{{align|}}} 
 |noinfo = {{{noinfo|}}}
 |type   = {{{type|}}}
