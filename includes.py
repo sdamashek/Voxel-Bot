@@ -28,7 +28,11 @@ def getSummaryList():
 	return [(i.attributes['comment'].value+" Rev Link: http://en.wikipedia.org/w/index.php?diff="+i.attributes['revid'].value) for i in changes]
 def getCounts():
 	sums = getSummaryList()
-	revert = int(round((len(([i for i in sums if classifyEdit(i)]))+1)/5.0))
+	rv = len(([i for i in sums if classifyEdit(i)]))
+	if rv == 0:
+		revert = 0
+	else:
+		revert = int(round((rv+1)/5.0))
 	total = int(round((len(sums)+1)/5.0))
 	return (total, revert)
 def getSummaries(thatAreVandalism):
