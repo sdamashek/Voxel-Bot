@@ -54,7 +54,7 @@ if str(theTuple[0]) + " " + str(theTuple[1]) not in b:
 </noinclude>""" #Define template, adding in values
 	print edit #Print for Debugging
 
-	editInfo = url.Request("http://en.wikipedia.org/w/api.php", urllib.urlencode({"format": "xml", "action": "edit", "token": x, "summary": "Updating Vandalism Information Template (Unapproved bot editing [[Wikipedia:Bot_policy#Requests_for_approval|in own userspace]])", "text": edit, "title": "User:VoxelBot/Vandalism information"})) #Add "bot": true, when approved Also, if approved for trial, add ([[Wikipedia:Bots/Requests for approval/VoxelBot|bot on trial]])  Define the edit query and execute it
+	editInfo = url.Request("http://en.wikipedia.org/w/api.php", urllib.urlencode({"format": "xml", "action": "edit", "token": x, "summary": "Updating Vandalism Information Template ([[Wikipedia:Bots/Requests for approval/VoxelBot|bot on trial]])", "text": edit, "bot": true, "title": "Template:Vandalism information"})) #Define the edit query and execute it
 	response = ClientCookie.urlopen(editInfo).read() #Get the response
 	print response #Print for debugging
 else:
