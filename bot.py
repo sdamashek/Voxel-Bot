@@ -36,10 +36,10 @@ print "Edit Per Minute: ", theTuple[0] #Output Edits per Minute to Output Screen
 print "RV Per Minute: ", theTuple[1] #Same, but for reverts
 a = open("bot.txt") #open connection to the previous value file, bot.txt
 b = a.read() #set value of a to b
-if str(theTuple[0]) + " " + str(theTuple[1]) not in b:
+if str(theTuple[1]) not in b:
 	a.close() #close to make way for write connection
 	a = open("bot.txt", "w") #Open in write connection
-	a.write(str(theTuple[0]) + " " + str(theTuple[1])) #Add current values to previous value file
+	a.write(str(theTuple[1])) #Add current values to previous value file
 	a.close() #A is no longer needed
 	print "Template:"
 	edit = """{{{{#if:{{{style|}}}|wdefcon/styles/{{{style}}}|{{{prefix|User:Zsinj/}}}Wdefcon}}
