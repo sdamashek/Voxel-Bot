@@ -29,10 +29,7 @@ def getSummaryList():
 def getCounts():
 	sums = getSummaryList()
 	rv = len(([i for i in sums if classifyEdit(i)]))
-	if rv == 0:
-		revert = 0
-	else:
-		revert = int(round((rv+1)/5.0))
+	revert = 0 if rv is 0 else int(round((rv+1)/5.0))
 	total = int(round((len(sums)+1)/5.0))
 	return (total, revert)
 def getSummaries(thatAreVandalism):
