@@ -36,9 +36,10 @@ print "Edit Per Minute: ", theTuple[0] #Output Edits per Minute to Output Screen
 print "RV Per Minute: ", theTuple[1] #Same, but for reverts
 a = open("bot.txt") #open connection to the previous value file, bot.txt
 b = a.read() #set value of a to b
-x = "http://en.wikipedia.org/w/api.php?action=query&titles=Template:Vandalism information&format=xml&prop=revisions&rvprop=content" #Get Template contents to do manual override check
-templatecontent = CC.urlopen(x).read() #Make the request
-if str(theTuple[1]) not in b and "<!--NOOVERRIDE-->" in templatecontent:
+templatecontent = "http://en.wikipedia.org/w/api.php?action=query&titles=Template:Vandalism_information&format=xml&prop=revisions&rvprop=content" #Get Template contents to do manual override check
+templatecontent = ClientCookie.urlopen(templatecontent).read() #Make the request
+print templatecontent
+if str(theTuple[1]) not in b and "&lt;!--NOOVERRIDE--&gt;" in templatecontent:
 	a.close() #close to make way for write connection
 	a = open("bot.txt", "w") #Open in write connection
 	a.write(str(theTuple[1])) #Add current values to previous value file
