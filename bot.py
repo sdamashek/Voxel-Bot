@@ -36,13 +36,16 @@ print "Edit Per Minute: ", theTuple[0] #Output Edits per Minute to Output Screen
 print "RV Per Minute: ", theTuple[1] #Same, but for reverts
 a = open("bot.txt") #open connection to the previous value file, bot.txt
 b = a.read() #set value of a to b
-if str(theTuple[1]) not in b:
+templatecontent = "http://en.wikipedia.org/w/api.php?action=query&titles=Template:Vandalism information&format=xml&prop=revisions&rvprop=content" #Get Template contents to do manual override check
+if str(theTuple[1]) not in b and "<!--NOOVERRIDE-->" in templatecontent:
 	a.close() #close to make way for write connection
 	a = open("bot.txt", "w") #Open in write connection
 	a.write(str(theTuple[1])) #Add current values to previous value file
 	a.close() #A is no longer needed
 	print "Template:"
-	edit = """{{{{#if:{{{style|}}}|wdefcon/styles/{{{style}}}|{{{prefix|User:Zsinj/}}}Wdefcon}}
+	edit = """<!--This page is edited by VoxelBot. To manually stop VoxelBot from editing this page, change "NOOVERRIDE" below to "OVERRIDE" and please notify Vacation9 and Fox Wilson.-->
+<!--NOOVERRIDE-->
+{{{{#if:{{{style|}}}|wdefcon/styles/{{{style}}}|{{{prefix|User:Zsinj/}}}Wdefcon}}
 |level  = {{WikiDefcon/levels|"""+str(theTuple[1])+"""}}
 |sign   = ~~~~~
 |info   = """ + str(theTuple[0]) + "/" + str(theTuple[1])+ """ according to ~~~
