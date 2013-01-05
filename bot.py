@@ -5,6 +5,7 @@ import ClientCookie
 import re
 from logininfo import * #import various libraries and the login info
 from includes import *
+<<<<<<< .merge_file_H78TfK
 #def getCountThingy():
 #    currentTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", (time.gmtime(time.time()-300))) #Format time according to MediaWiki API Specifications
 #    x = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+currentTime+"&rcend="+time.strftime("&Y-&m-&dT%H:%M:%SZ", time.gmtime())+"&rclimit=500&rcdir=newer&rcprop=comment|ids&format=xml" #Define RecentChanges Query
@@ -32,6 +33,9 @@ x = ClientCookie.urlopen("http://en.wikipedia.org/w/api.php?action=tokens&format
 print x #Print the token for debugging
 theTuple = getCounts() #Define tuple as array
 open("/home/pibot/webdocs/report.txt", "a").writelines(getSummaries(True))
+=======
+theTuple = getCounts() #Define tuple as array
+>>>>>>> .merge_file_H2q2pH
 print "Edit Per Minute: ", theTuple[0] #Output Edits per Minute to Output Screen for Debugging
 print "RV Per Minute: ", theTuple[1] #Same, but for reverts
 a = open("bot.txt") #open connection to the previous value file, bot.txt
