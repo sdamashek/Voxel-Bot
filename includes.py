@@ -19,8 +19,8 @@ def classifyEdit(summary):
 			return True
 	return False
 def getSummaryList():
-	currentTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", (time.gmtime(time.time()-300))) #Format time according to MediaWiki API Specifications
-	x = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+currentTime+"&rcend="+time.strftime("&Y-&m-&dT%H:%M:%SZ", time.gmtime())+"&rclimit=2000&rcdir=newer&rcprop=comment|ids&format=xml" #Define RecentChanges Query
+	currentTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", (time.gmtime(time.time()-600))) #Format time according to MediaWiki API Specifications
+	x = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+currentTime+"&rcend="+time.strftime("&Y-&m-&dT%H:%M:%SZ", time.gmtime())+"&rclimit=5000&rcdir=newer&rcprop=comment|ids&format=xml" #Define RecentChanges Query
 	data = CC.urlopen(x).read() #Make the request
 	data = data.lower() #Make everything lowercase for ease of parsing
 	dom = minidom.parseString(data)
@@ -29,8 +29,8 @@ def getSummaryList():
 def getCounts():
 	sums = getSummaryList()
 	rv = len(([i for i in sums if classifyEdit(i)]))
-	revert = 0 if rv is 0 else int(round((rv+1)/5.0))
-	total = int(round((len(sums)+1)/5.0))
+	revert = 0 if rv is 0 else int(round((rv+1)/10.0))
+	total = int(round((len(sums)+1)/10.0))
 	return (total, revert)
 def getSummaries(thatAreVandalism):
 	e = []
