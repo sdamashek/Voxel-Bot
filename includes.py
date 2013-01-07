@@ -19,7 +19,7 @@ def classifyEdit(summary):
 			return True
 	return False
 def getSummaryList():
-	currentTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", (time.gmtime(time.time()-600))) #Format time according to MediaWiki API Specifications
+	currentTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", (time.gmtime(time.time()-1200))) #Format time according to MediaWiki API Specifications
 	x = "http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+currentTime+"&rcend="+time.strftime("&Y-&m-&dT%H:%M:%SZ", time.gmtime())+"&rclimit=5000&rcdir=newer&rcprop=comment|ids&format=xml" #Define RecentChanges Query
 	data = CC.urlopen(x).read() #Make the request
 	data = data.lower() #Make everything lowercase for ease of parsing
