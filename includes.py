@@ -37,8 +37,8 @@ def getSummaryList():
 def getCounts():
 	sums = getSummaryList()
 	rv = len(([i for i in sums if classifyEdit(i)]))
-	revert = 0 if rv is 0 else int(round((rv+1)/10.0))
-	total = int(round((len(sums)+1)/10.0))
+	revert = 0 if rv is 0 else int(round((rv+1)/30.0))
+	total = int(round((len(sums)+1)/30.0))
 	return (total, revert)
 def getSummaries(thatAreVandalism):
 	e = []
