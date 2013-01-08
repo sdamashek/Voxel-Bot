@@ -29,12 +29,10 @@ def recentChangesGet(timeFrom, currentData = None): #Because everybody likes rec
 	dom = minidom.parseString(data)
 	changes = dom.getElementsByTagName("rc")
 	try:
-<<<<<<< HEAD
 		print recentChangesGet(recentChanges[0].attributes['rcstart'].value)
 		return [(recentChangesGet(recentChanges[0].attributes['rcstart'].value))+[(i.attributes['comment'].value+" Rev Link: http://en.wikipedia.org/w/index.php?diff="+i.attributes['revid'].value) for i in changes]]
 	except KeyError:
 		return [(i.attributes['comment'].value+" Diff: http://en.wikipedia.org/w/index.php?diff="+i.attributes['revid'].value) for i in changes]
-=======
 		rcg=recentChangesGet(recentChanges[1].attributes['rcstart'].value)
 		#print rcg
 		changes=[(i.attributes['comment'].value+" Rev Link: http://en.wikipedia.org/w/index.php?diff="+i.attributes['revid'].value) for i in changes]
@@ -43,7 +41,6 @@ def recentChangesGet(timeFrom, currentData = None): #Because everybody likes rec
 	except IndexError:
 		print "ending recursion"
 		return [(i.attributes['comment'].value+" Rev Link: http://en.wikipedia.org/w/index.php?diff="+i.attributes['revid'].value) for i in changes]
->>>>>>> Fix quer-continue
 def getSummaryList():
 	currentTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", (time.gmtime(time.time()-1800))) #Format time according to MediaWiki API Specifications
 	rc=recentChangesGet(currentTime)
