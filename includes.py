@@ -26,13 +26,14 @@ def recentChangesGet(timeFrom): #Because everybody likes recursiveness
 	recentChanges = dom.getElementsByTagName("recentchanges")
 	changes = dom.getElementsByTagName("rc")
 	try:
-		return [(recentChangesGet(recentChanges[0].attributes['rcstart'].value))+((i.attributes['comment'].value+" Rev Link: http://en.wikipedia.org/w/index.php?diff="+i.attributes['revid'].value) for i in changes)]
+		print recentChangesGet(recentChanges[0].attributes['rcstart'].value)
+		return [(recentChangesGet(recentChanges[0].attributes['rcstart'].value))+[(i.attributes['comment'].value+" Rev Link: http://en.wikipedia.org/w/index.php?diff="+i.attributes['revid'].value) for i in changes]]
 	except KeyError:
 		return [(i.attributes['comment'].value+" Rev Link: http://en.wikipedia.org/w/index.php?diff="+i.attributes['revid'].value) for i in changes]
 def getSummaryList():
 	currentTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", (time.gmtime(time.time()-1800))) #Format time according to MediaWiki API Specifications
 	rc=recentChangesGet(currentTime)
-	print rc
+	#print rc
 	return rc
 def getCounts():
 	sums = getSummaryList()
