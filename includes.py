@@ -20,7 +20,7 @@ def classifyEdit(summary):
 	return False
 def recentChangesGet(timeFrom): #Because everybody likes recursiveness
 	print timeFrom
-	data = CC.urlopen("http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+timeFrom+"&rcend="+time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())+"&rclimit=5000&rcdir=newer&rcprop=comment|ids&format=xml").read() #Make the request
+	data = CC.urlopen("http://en.wikipedia.org/w/api.php?action=query&list=recentchanges&rcstart="+timeFrom+"&rcend="+time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())+"&rclimit=500&rcdir=newer&rcprop=comment|ids&format=xml").read() #Make the request
 	data = data.lower() #Make everything lowercase for ease of parsing
 	dom = minidom.parseString(data)
 	recentChanges = dom.getElementsByTagName("recentchanges")
