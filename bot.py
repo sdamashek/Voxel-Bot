@@ -58,7 +58,7 @@ if str(theTuple[1]) not in b and "&lt;!--NOOVERRIDE--&gt;" in templatecontent:
 }}<noinclude>
 {{documentation}}
 </noinclude>""" #Define template, adding in values
-	summary = """Update template: """ + str(theTuple[0]) + """/""" + str(theTuple[1]) + """ - ([[Wikipedia:Bots/Requests for approval/VoxelBot|bot in extended trial]])"""
+	summary = """Update template: """ + str(theTuple[0]) + """/""" + str(theTuple[1]) +""" (counts are per minute)"""
 	print edit #Print for Debugging
 
 	editInfo = url.Request("http://en.wikipedia.org/w/api.php", urllib.urlencode({"format": "xml", "action": "edit", "token": x, "summary": summary, "text": edit, "bot": "true", "title": "Template:Vandalism information"})) #Define the edit query and execute it
