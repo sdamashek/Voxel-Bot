@@ -58,9 +58,9 @@ if str(theTuple[1]) not in b and "&lt;!--NOOVERRIDE--&gt;" in templatecontent:
 }}<noinclude>
 {{documentation}}
 </noinclude>""" #Define template, adding in values
-	summary = """Update template: """ + str(theTuple[0]) + """/""" + str(theTuple[1]) + """ (per minute)"""
+	level = 1 if theTuple[1]>=20 else 2 if theTuple[1]>=15 else 3 if theTuple[1]>=10 else 4 if theTuple[1]>=5 else 5
+	summary = """Update template: level """ + str(level) + """ - """ + str(theTuple[0]) + """/""" + str(theTuple[1]) + """ (per minute)"""
 	print edit #Print for Debugging
-
 	editInfo = url.Request("http://en.wikipedia.org/w/api.php", urllib.urlencode({"format": "xml", "action": "edit", "token": x, "summary": summary, "text": edit, "bot": "true", "title": "Template:Vandalism information"})) #Define the edit query and execute it
 	response = ClientCookie.urlopen(editInfo).read() #Get the response
 	print response #Print for debugging
