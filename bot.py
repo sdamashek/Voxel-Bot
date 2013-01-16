@@ -32,7 +32,7 @@ print loginResponse #Print login response for debugging
 x = ClientCookie.urlopen("http://en.wikipedia.org/w/api.php?action=tokens&format=xml").read().split('edittoken="')[1].split('" />')[0] #Get edit token - required to edit the template
 print x #Print the token for debugging
 theTuple = getCounts() #Define tuple as array
-open("/data/project/public_html/vacation9/VoxelBot/report.txt", "a").writelines(getSummaries(True))
+#open("/data/project/public_html/vacation9/VoxelBot/report.txt", "a").writelines(getSummaries(True))
 print "Edit Per Minute: ", theTuple[0] #Output Edits per Minute to Output Screen for Debugging
 print "RV Per Minute: ", theTuple[1] #Same, but for reverts
 a = open("bot.txt") #open connection to the previous value file, bot.txt
