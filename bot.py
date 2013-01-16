@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import time
 import urllib2 as url
 import urllib

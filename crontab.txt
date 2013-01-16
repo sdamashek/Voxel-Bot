@@ -1,1 +1,1 @@
-0,30 * * * * /home/vacation9/VoxelBot/bot.py
+0,30 * * * * /home/vacation9/VoxelBot/bot.py > /home/vacation9/cronlog.txt 2>&1
