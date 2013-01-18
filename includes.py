@@ -5,7 +5,7 @@ import urllib
 from xml.dom import minidom
 def classifyEdit(summary):
 	summary = summary.lower()
-	vandalism = ["revert", "rv "]
+	vandalism = ["revert", "rv ", "long-term abuse", "long term abuse", "lta", "abuse"] #long term abuse (in blocks) added per legoktm
 	notVandalism = ["good faith", "agf", "unsourced", "unreferenced", "self", "speculat", "original research", "rv tag", "typo", "incorrect", "format"]
 	for i in notVandalism:
 		if i in summary:
