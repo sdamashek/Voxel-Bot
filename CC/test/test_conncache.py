@@ -1,6 +1,8 @@
 """Tests for ClientCookie._ConnCache module."""
 
-import unittest, sys
+import unittest
+import sys
+
 
 class ConnCacheTests(unittest.TestCase):
 
@@ -10,5 +12,5 @@ class ConnCacheTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    #unittest.main()
+    # unittest.main()
     pass

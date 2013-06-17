@@ -9,15 +9,20 @@ COPYING.txt included with the distribution).
 
 """
 
-try: True
+try:
+    True
 except NameError:
     True = 1
     False = 0
 
-import urllib2, string, bisect, urlparse
+import urllib2
+import string
+import bisect
+import urlparse
 
 from _Util import startswith, isstringlike
 from _Request import Request
+
 
 def methnames(obj):
     """Return method names of class instance.
@@ -27,6 +32,7 @@ def methnames(obj):
     """
     return methnames_of_instance_as_dict(obj).keys()
 
+
 def methnames_of_instance_as_dict(inst):
     names = {}
     names.update(methnames_of_class_as_dict(inst.__class__))
@@ -35,6 +41,7 @@ def methnames_of_instance_as_dict(inst):
         if callable(candidate):
             names[methname] = None
     return names
+
 
 def methnames_of_class_as_dict(klass):
     names = {}
@@ -48,6 +55,7 @@ def methnames_of_class_as_dict(klass):
 
 
 class OpenerMixin:
+
     def _request(self, url_or_req, data):
         if isstringlike(url_or_req):
             req = Request(url_or_req, data)
@@ -78,7 +86,7 @@ class OpenerMixin:
             suffix = os.path.splitext(path)[1]
             tfp = tempfile.TemporaryFile("wb", suffix=suffix)
         result = filename, headers
-        bs = 1024*8
+        bs = 1024 * 8
         size = -1
         read = 0
         blocknum = 1
@@ -99,13 +107,14 @@ class OpenerMixin:
         tfp.close()
         del fp
         del tfp
-        if size>=0 and read<size:
+        if size >= 0 and read < size:
             raise IOError("incomplete retrieval error",
-                          "got only %d bytes out of %d" % (read,size))
+                          "got only %d bytes out of %d" % (read, size))
         return result
 
 
 class OpenerDirector(urllib2.OpenerDirector, OpenerMixin):
+
     def __init__(self):
         urllib2.OpenerDirector.__init__(self)
         self.process_response = {}
@@ -116,11 +125,11 @@ class OpenerDirector(urllib2.OpenerDirector, OpenerMixin):
         for meth in methnames(handler):
             i = string.find(meth, "_")
             protocol = meth[:i]
-            condition = meth[i+1:]
+            condition = meth[i + 1:]
 
             if startswith(condition, "error"):
-                j = string.find(meth[i+1:], "_") + i + 1
-                kind = meth[j+1:]
+                j = string.find(meth[i + 1:], "_") + i + 1
+                kind = meth[j + 1:]
                 try:
                     kind = int(kind)
                 except ValueError:
@@ -137,7 +146,7 @@ class OpenerDirector(urllib2.OpenerDirector, OpenerMixin):
                 # appears to above line to be a processor because of the
                 # redirect_request method :-((
                 kind = protocol
-                lookup = getattr(self, "process_"+condition)
+                lookup = getattr(self, "process_" + condition)
             else:
                 continue
 
@@ -160,7 +169,7 @@ class OpenerDirector(urllib2.OpenerDirector, OpenerMixin):
         # pre-process request
         # XXX should we allow a Processor to change the type (URL
         #   scheme) of the request?
-        meth_name = type_+"_request"
+        meth_name = type_ + "_request"
         for processor in self.process_request.get(type_, []):
             meth = getattr(processor, meth_name)
             req = meth(req)
@@ -168,7 +177,7 @@ class OpenerDirector(urllib2.OpenerDirector, OpenerMixin):
         response = urllib2.OpenerDirector.open(self, req, data)
 
         # post-process response
-        meth_name = type_+"_response"
+        meth_name = type_ + "_response"
         for processor in self.process_response.get(type_, []):
             meth = getattr(processor, meth_name)
             response = meth(req, response)
@@ -178,7 +187,8 @@ class OpenerDirector(urllib2.OpenerDirector, OpenerMixin):
     def error(self, proto, *args):
         if proto in ['http', 'https']:
             # XXX http[s] protocols are special-cased
-            dict = self.handle_error['http'] # https is not different than http
+            dict = self.handle_error[
+                'http']  # https is not different than http
             proto = args[2]  # YUCK!
             meth_name = 'http_error_%s' % proto
             http_err = 1

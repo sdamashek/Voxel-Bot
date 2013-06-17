@@ -9,20 +9,24 @@ COPYING.txt included with the distribution).
 
 """
 
-import re, string, time
+import re
+import string
+import time
 
 from _ClientCookie import reraise_unmasked_exceptions, FileCookieJar, Cookie, \
-     MISSING_FILENAME_TEXT, LoadError
+    MISSING_FILENAME_TEXT, LoadError
 from _Util import startswith, endswith
 from _Debug import getLogger
 debug = getLogger("ClientCookie").debug
 
-try: True
+try:
+    True
 except NameError:
     True = 1
     False = 0
 
-try: issubclass(Exception(), (Exception,))
+try:
+    issubclass(Exception(), (Exception,))
 except TypeError:
     real_issubclass = issubclass
     from _Util import compat_issubclass
@@ -31,6 +35,7 @@ except TypeError:
 
 
 class MozillaCookieJar(FileCookieJar):
+
     """
 
     WARNING: you may want to backup your browser's cookies file if you use
@@ -82,19 +87,21 @@ class MozillaCookieJar(FileCookieJar):
         try:
             while 1:
                 line = f.readline()
-                if line == "": break
+                if line == "":
+                    break
 
                 # last field may be absent, so keep any trailing tab
-                if endswith(line, "\n"): line = line[:-1]
+                if endswith(line, "\n"):
+                    line = line[:-1]
 
                 # skip comments and blank lines XXX what is $ for?
                 if (startswith(string.strip(line), "#") or
                     startswith(string.strip(line), "$") or
-                    string.strip(line) == ""):
+                        string.strip(line) == ""):
                     continue
 
                 domain, domain_specified, path, secure, expires, name, value = \
-                        string.split(line, "\t")
+                    string.split(line, "\t")
                 secure = (secure == "TRUE")
                 domain_specified = (domain_specified == "TRUE")
                 if name == "":
@@ -129,12 +136,14 @@ class MozillaCookieJar(FileCookieJar):
         except:
             reraise_unmasked_exceptions((IOError,))
             raise LoadError("invalid Netscape format file %s: %s" %
-                          (filename, line))
+                           (filename, line))
 
     def save(self, filename=None, ignore_discard=False, ignore_expires=False):
         if filename is None:
-            if self.filename is not None: filename = self.filename
-            else: raise ValueError(MISSING_FILENAME_TEXT)
+            if self.filename is not None:
+                filename = self.filename
+            else:
+                raise ValueError(MISSING_FILENAME_TEXT)
 
         f = open(filename, "w")
         try:
@@ -148,10 +157,14 @@ class MozillaCookieJar(FileCookieJar):
                 if not ignore_expires and cookie.is_expired(now):
                     debug("   Not saving %s: expired", cookie.name)
                     continue
-                if cookie.secure: secure = "TRUE"
-                else: secure = "FALSE"
-                if startswith(cookie.domain, "."): initial_dot = "TRUE"
-                else: initial_dot = "FALSE"
+                if cookie.secure:
+                    secure = "TRUE"
+                else:
+                    secure = "FALSE"
+                if startswith(cookie.domain, "."):
+                    initial_dot = "TRUE"
+                else:
+                    initial_dot = "FALSE"
                 if cookie.expires is not None:
                     expires = str(cookie.expires)
                 else:
@@ -167,7 +180,7 @@ class MozillaCookieJar(FileCookieJar):
                     value = cookie.value
                 f.write(
                     string.join([cookie.domain, initial_dot, cookie.path,
-                                 secure, expires, name, value], "\t")+
+                                 secure, expires, name, value], "\t") +
                     "\n")
         finally:
             f.close()

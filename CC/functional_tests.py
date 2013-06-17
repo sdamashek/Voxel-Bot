@@ -2,38 +2,42 @@
 
 # These tests access the network.
 
-import unittest, string, os
+import unittest
+import string
+import os
 from unittest import TestCase
 import urllib2
 
 import ClientCookie
 from ClientCookie import build_opener, install_opener, urlopen, urlretrieve
 from ClientCookie import CookieJar, HTTPCookieProcessor, \
-     HTTPHandler, HTTPRefreshProcessor, \
-     HTTPEquivProcessor, HTTPRedirectHandler, \
-     HTTPRedirectDebugProcessor, HTTPResponseDebugProcessor
+    HTTPHandler, HTTPRefreshProcessor, \
+    HTTPEquivProcessor, HTTPRedirectHandler, \
+    HTTPRedirectDebugProcessor, HTTPResponseDebugProcessor
 
-#from cookielib import CookieJar
-#from urllib2 import build_opener, install_opener, urlopen
-#from urllib2 import HTTPCookieProcessor, HTTPHandler
+# from cookielib import CookieJar
+# from urllib2 import build_opener, install_opener, urlopen
+# from urllib2 import HTTPCookieProcessor, HTTPHandler
 
-#from ClientCookie import CreateBSDDBCookieJar
+# from ClientCookie import CreateBSDDBCookieJar
 
-try: True
+try:
+    True
 except NameError:
     True = 1
     False = 0
 
 
-## logger = ClientCookie.getLogger("ClientCookie")
-## logger.addHandler(ClientCookie.StreamHandler())
-## logger.setLevel(ClientCookie.DEBUG)
+# logger = ClientCookie.getLogger("ClientCookie")
+# logger.addHandler(ClientCookie.StreamHandler())
+# logger.setLevel(ClientCookie.DEBUG)
 
 class FunctionalTests(TestCase):
+
     def test_clientcookie(self):
         # XXX set up test page on SF or python.org
         # this test page depends on cookies, and an http-equiv refresh
-        #cj = CreateBSDDBCookieJar("/home/john/db.db")
+        # cj = CreateBSDDBCookieJar("/home/john/db.db")
         cj = CookieJar()
         handlers = [
             HTTPCookieProcessor(cj),
@@ -44,7 +48,7 @@ class FunctionalTests(TestCase):
 #            HTTPHandler(True),
 #            HTTPRedirectDebugProcessor(),
 #            HTTPResponseDebugProcessor(),
-            ]
+        ]
 
         o = apply(build_opener, handlers)
         try:
@@ -52,10 +56,10 @@ class FunctionalTests(TestCase):
             try:
                 r = urlopen("http://wwwsearch.sf.net/cgi-bin/cookietest.cgi")
             except urllib2.URLError, e:
-                #print e.read()
+                # print e.read()
                 raise
             data = r.read()
-            #print data
+            # print data
             self.assert_(
                 string.find(data, "Your browser supports cookies!") >= 0)
             self.assert_(len(cj) == 1)
@@ -84,22 +88,25 @@ class FunctionalTests(TestCase):
         self.assert_(data == r.read())
         r.close()
 
-##     def test_cacheftp(self):
-##         from urllib2 import CacheFTPHandler, build_opener
-##         o = build_opener(CacheFTPHandler())
-##         r = o.open("ftp://ftp.python.org/pub/www.python.org/robots.txt")
-##         data1 = r.read()
-##         r.close()
-##         r = o.open("ftp://ftp.python.org/pub/www.python.org/2.3.2/announce.txt")
-##         data2 = r.read()
-##         r.close()
-##         self.assert_(data1 != data2)
+# def test_cacheftp(self):
+# from urllib2 import CacheFTPHandler, build_opener
+# o = build_opener(CacheFTPHandler())
+# r = o.open("ftp://ftp.python.org/pub/www.python.org/robots.txt")
+# data1 = r.read()
+# r.close()
+# r = o.open("ftp://ftp.python.org/pub/www.python.org/2.3.2/announce.txt")
+# data2 = r.read()
+# r.close()
+# self.assert_(data1 != data2)
+
 
 class CallbackVerifier:
     # for .test_urlretrieve()
+
     def __init__(self, testcase):
         self._count = 0
         self._testcase = testcase
+
     def callback(self, block_nr, block_size, total_size):
         if block_nr != self._count:
             self._testcase.fail()
@@ -107,6 +114,7 @@ class CallbackVerifier:
 
 
 class ResponseTests(TestCase):
+
     def test_response_close_and_read(self):
         opener = ClientCookie.build_opener(ClientCookie.SeekableProcessor)
         r = opener.open("http://wwwsearch.sf.net/bits/cctest2.txt")
@@ -115,7 +123,8 @@ class ResponseTests(TestCase):
         r.read()
         r.close()
         r.seek(0)
-        self.assertEqual(r.read(), "Hello ClientCookie functional test suite.\n")
+        self.assertEqual(
+            r.read(), "Hello ClientCookie functional test suite.\n")
 
 
 if __name__ == "__main__":

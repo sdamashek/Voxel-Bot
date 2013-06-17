@@ -8,12 +8,17 @@ COPYING.txt included with the distribution).
 
 """
 
-try: True
+try:
+    True
 except NameError:
     True = 1
     False = 0
 
-import re, string, time, copy, urllib
+import re
+import string
+import time
+import copy
+import urllib
 from types import TupleType
 from cStringIO import StringIO
 
@@ -22,13 +27,18 @@ try:
 except ImportError:
     from ClientCookie._ClientCookie import StopIteration
 
+
 def startswith(string, initial):
-    if len(initial) > len(string): return False
+    if len(initial) > len(string):
+        return False
     return string[:len(initial)] == initial
 
+
 def endswith(string, final):
-    if len(final) > len(string): return False
+    if len(final) > len(string):
+        return False
     return string[-len(final):] == final
+
 
 def compat_issubclass(obj, tuple_or_class):
     # for 2.1 and below
@@ -39,6 +49,7 @@ def compat_issubclass(obj, tuple_or_class):
         return False
     return issubclass(obj, tuple_or_class)
 
+
 def compat_isinstance(obj, tuple_or_class):
     # for 2.1 and below
     if type(tuple_or_class) == TupleType:
@@ -48,22 +59,31 @@ def compat_isinstance(obj, tuple_or_class):
         return False
     return isinstance(obj, tuple_or_class)
 
+
 def isstringlike(x):
-    try: x+""
-    except: return False
-    else: return True
+    try:
+        x + ""
+    except:
+        return False
+    else:
+        return True
 
 SPACE_DICT = {}
 for c in string.whitespace:
     SPACE_DICT[c] = None
 del c
+
+
 def isspace(string):
     for c in string:
-        if not SPACE_DICT.has_key(c): return False
+        if not SPACE_DICT.has_key(c):
+            return False
     return True
 
 # this is here rather than in _HeadersUtil as it's just for
 # compatibility with old Python versions, rather than entirely new code
+
+
 def getheaders(msg, name):
     """Get all values for a header.
 
@@ -98,38 +118,41 @@ except:
 
     # Return 1 for leap years, 0 for non-leap years
     def isleap(year):
-	return year % 4 == 0 and (year % 100 <> 0 or year % 400 == 0)
+        return year % 4 == 0 and (year % 100 <> 0 or year % 400 == 0)
 
     # Return number of leap years in range [y1, y2)
     # Assume y1 <= y2 and no funny (non-leap century) years
     def leapdays(y1, y2):
-	return (y2+3)/4 - (y1+3)/4
+        return (y2 + 3) / 4 - (y1 + 3) / 4
 
     EPOCH = 1970
+
     def timegm(tuple):
         """Unrelated but handy function to calculate Unix timestamp from GMT."""
         year, month, day, hour, minute, second = tuple[:6]
         assert year >= EPOCH
         assert 1 <= month <= 12
-        days = 365*(year-EPOCH) + leapdays(EPOCH, year)
+        days = 365 * (year - EPOCH) + leapdays(EPOCH, year)
         for i in range(1, month):
             days = days + mdays[i]
         if month > 2 and isleap(year):
             days = days + 1
         days = days + day - 1
-        hours = days*24 + hour
-        minutes = hours*60 + minute
-        seconds = minutes*60L + second
+        hours = days * 24 + hour
+        minutes = hours * 60 + minute
+        seconds = minutes * 60L + second
         return seconds
 
 
 # Date/time conversion routines for formats used by the HTTP protocol.
 
 EPOCH = 1970
+
+
 def my_timegm(tt):
     year, month, mday, hour, min, sec = tt[:6]
     if ((year >= EPOCH) and (1 <= month <= 12) and (1 <= mday <= 31) and
-        (0 <= hour <= 24) and (0 <= min <= 59) and (0 <= sec <= 61)):
+            (0 <= hour <= 24) and (0 <= min <= 59) and (0 <= sec <= 61)):
         return timegm(tt)
     else:
         return None
@@ -138,7 +161,8 @@ days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 months_lower = []
-for month in months: months_lower.append(string.lower(month))
+for month in months:
+    months_lower.append(string.lower(month))
 
 
 def time2isoz(t=None):
@@ -153,10 +177,12 @@ def time2isoz(t=None):
     1994-11-24 08:49:37Z
 
     """
-    if t is None: t = time.time()
+    if t is None:
+        t = time.time()
     year, mon, mday, hour, min, sec = time.gmtime(t)[:6]
     return "%04d-%02d-%02d %02d:%02d:%02dZ" % (
         year, mon, mday, hour, min, sec)
+
 
 def time2netscape(t=None):
     """Return a string representing time in seconds since epoch, t.
@@ -169,15 +195,18 @@ def time2netscape(t=None):
     Wed, DD-Mon-YYYY HH:MM:SS GMT
 
     """
-    if t is None: t = time.time()
+    if t is None:
+        t = time.time()
     year, mon, mday, hour, min, sec, wday = time.gmtime(t)[:7]
     return "%s %02d-%s-%04d %02d:%02d:%02d GMT" % (
-        days[wday], mday, months[mon-1], year, hour, min, sec)
+        days[wday], mday, months[mon - 1], year, hour, min, sec)
 
 
 UTC_ZONES = {"GMT": None, "UTC": None, "UT": None, "Z": None}
 
 timezone_re = re.compile(r"^([-+])?(\d\d?):?(\d\d)?$")
+
+
 def offset_from_tz_string(tz):
     offset = None
     if UTC_ZONES.has_key(tz):
@@ -192,11 +221,12 @@ def offset_from_tz_string(tz):
                 offset = -offset
     return offset
 
+
 def _str2time(day, mon, yr, hr, min, sec, tz):
     # translate month name to number
     # month numbers start with 1 (January)
     try:
-        mon = months_lower.index(string.lower(mon))+1
+        mon = months_lower.index(string.lower(mon)) + 1
     except ValueError:
         # maybe it's already a number
         try:
@@ -209,9 +239,12 @@ def _str2time(day, mon, yr, hr, min, sec, tz):
             return None
 
     # make sure clock elements are defined
-    if hr is None: hr = 0
-    if min is None: min = 0
-    if sec is None: sec = 0
+    if hr is None:
+        hr = 0
+    if min is None:
+        min = 0
+    if sec is None:
+        sec = 0
 
     yr = int(yr)
     day = int(day)
@@ -220,15 +253,17 @@ def _str2time(day, mon, yr, hr, min, sec, tz):
     sec = int(sec)
 
     if yr < 1000:
-	# find "obvious" year
-	cur_yr = time.localtime(time.time())[0]
-	m = cur_yr % 100
-	tmp = yr
-	yr = yr + cur_yr - m
-	m = m - tmp
+        # find "obvious" year
+        cur_yr = time.localtime(time.time())[0]
+        m = cur_yr % 100
+        tmp = yr
+        yr = yr + cur_yr - m
+        m = m - tmp
         if abs(m) > 50:
-            if m > 0: yr = yr + 100
-            else: yr = yr - 100
+            if m > 0:
+                yr = yr + 100
+            else:
+                yr = yr - 100
 
     # convert UTC time tuple to seconds since epoch (not timezone-adjusted)
     t = my_timegm((yr, mon, day, hr, min, sec, tz))
@@ -246,7 +281,8 @@ def _str2time(day, mon, yr, hr, min, sec, tz):
     return t
 
 
-strict_re = re.compile(r"^[SMTWF][a-z][a-z], (\d\d) ([JFMASOND][a-z][a-z]) (\d\d\d\d) (\d\d):(\d\d):(\d\d) GMT$")
+strict_re = re.compile(
+    r"^[SMTWF][a-z][a-z], (\d\d) ([JFMASOND][a-z][a-z]) (\d\d\d\d) (\d\d):(\d\d):(\d\d) GMT$")
 wkday_re = re.compile(
     r"^(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[a-z]*,?\s*", re.I)
 loose_http_re = re.compile(
@@ -266,6 +302,8 @@ loose_http_re = re.compile(
        \s*
     (?:\(\w+\))?       # ASCII representation of timezone in parens.
        \s*$""", re.X)
+
+
 def http2time(text):
     """Returns time in seconds since epoch of time represented by a string.
 
@@ -311,7 +349,7 @@ def http2time(text):
     text = wkday_re.sub("", text, 1)  # Useless weekday
 
     # tz is time zone specifier string
-    day, mon, yr, hr, min, sec, tz = [None]*7
+    day, mon, yr, hr, min, sec, tz = [None] * 7
 
     # loose regexp parse
     m = loose_http_re.search(text)
@@ -339,6 +377,8 @@ iso_re = re.compile(
    ([-+]?\d\d?:?(:?\d\d)?
     |Z|z)?               # timezone  (Z is "zero meridian", i.e. GMT)
       \s*$""", re.X)
+
+
 def iso2time(text):
     """
     As for http2time, but parses the ISO 8601 formats:
@@ -355,7 +395,7 @@ def iso2time(text):
     text = string.lstrip(text)
 
     # tz is time zone specifier string
-    day, mon, yr, hr, min, sec, tz = [None]*7
+    day, mon, yr, hr, min, sec, tz = [None] * 7
 
     # loose regexp parse
     m = iso_re.search(text)
@@ -379,9 +419,10 @@ def iso2time(text):
 # invariant checking is turned on).  The invariant checking is done by module
 # ipdc, which is available here:
 # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/436834
-## from ipdbc import ContractBase
-## class seek_wrapper(ContractBase):
+# from ipdbc import ContractBase
+# class seek_wrapper(ContractBase):
 class seek_wrapper:
+
     """Adds a seek method to a file object.
 
     This is only designed for seeking on readonly file-like objects.
@@ -423,17 +464,19 @@ class seek_wrapper:
         return getattr(self.__class__, name)
 
     def seek(self, offset, whence=0):
-        assert whence in [0,1,2]
+        assert whence in [0, 1, 2]
 
         # how much data, if any, do we need to read?
         if whence == 2:  # 2: relative to end of *wrapped* file
-            if offset < 0: raise ValueError("negative seek offset")
+            if offset < 0:
+                raise ValueError("negative seek offset")
             # since we don't know yet where the end of that file is, we must
             # read everything
             to_read = None
         else:
             if whence == 0:  # 0: absolute
-                if offset < 0: raise ValueError("negative seek offset")
+                if offset < 0:
+                    raise ValueError("negative seek offset")
                 dest = offset
             else:  # 1: relative to current position
                 pos = self.__pos
@@ -457,7 +500,7 @@ class seek_wrapper:
                 # of .wrapped, since fseek() doesn't complain in that case.
                 # Also like fseek(), pretend we have seek()ed past the end,
                 # i.e. not:
-                #self.__pos = self.__cache.tell()
+                # self.__pos = self.__cache.tell()
                 # but rather:
                 self.__pos = dest
         else:
@@ -479,7 +522,7 @@ class seek_wrapper:
         # enough data already cached?
         if size <= available and size != -1:
             self.__cache.seek(pos)
-            self.__pos = pos+size
+            self.__pos = pos + size
             return self.__cache.read(size)
 
         # no, so read sufficient data from wrapped file and cache it
@@ -511,10 +554,10 @@ class seek_wrapper:
         data = self.__cache.readline()
         if size != -1:
             r = data[:size]
-            self.__pos = pos+size
+            self.__pos = pos + size
         else:
             r = data
-            self.__pos = pos+len(data)
+            self.__pos = pos + len(data)
         return r
 
     def readlines(self, sizehint=-1):
@@ -526,10 +569,13 @@ class seek_wrapper:
         self.__pos = self.__cache.tell()
         return data
 
-    def __iter__(self): return self
+    def __iter__(self):
+        return self
+
     def next(self):
         line = self.readline()
-        if line == "": raise StopIteration
+        if line == "":
+            raise StopIteration
         return line
 
     xreadlines = __iter__
@@ -570,23 +616,40 @@ class response_seek_wrapper(seek_wrapper):
 
 class eoffile:
     # file-like object that always claims to be at end-of-file...
-    def read(self, size=-1): return ""
-    def readline(self, size=-1): return ""
-    def __iter__(self): return self
-    def next(self): return ""
-    def close(self): pass
+
+    def read(self, size=-1):
+        return ""
+
+    def readline(self, size=-1):
+        return ""
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        return ""
+
+    def close(self):
+        pass
+
 
 class eofresponse(eoffile):
+
     def __init__(self, url, headers, code, msg):
         self._url = url
         self._headers = headers
         self.code = code
         self.msg = msg
-    def geturl(self): return self._url
-    def info(self): return self._headers
+
+    def geturl(self):
+        return self._url
+
+    def info(self):
+        return self._headers
 
 
 class closeable_response:
+
     """Avoids unnecessarily clobbering urllib.addinfourl methods on .close().
 
     Only supports responses returned by ClientCookie.HTTPHandler.
@@ -625,7 +688,8 @@ class closeable_response:
         self.fp = fp
         self.read = self.fp.read
         self.readline = self.fp.readline
-        if hasattr(self.fp, "readlines"): self.readlines = self.fp.readlines
+        if hasattr(self.fp, "readlines"):
+            self.readlines = self.fp.readlines
         if hasattr(self.fp, "fileno"):
             self.fileno = self.fp.fileno
         else:

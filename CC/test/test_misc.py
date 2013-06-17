@@ -1,7 +1,8 @@
 """Miscellaneous pyunit tests."""
 
 import copy
-import cStringIO, string
+import cStringIO
+import string
 from unittest import TestCase
 
 try:
@@ -9,14 +10,18 @@ try:
 except NameError:
     from ClientCookie._ClientCookie import StopIteration
 
+
 class TestUnSeekable:
+
     def __init__(self, text):
         self._file = cStringIO.StringIO(text)
         self.log = []
 
-    def tell(self): return self._file.tell()
+    def tell(self):
+        return self._file.tell()
 
-    def seek(self, offset, whence=0): assert False
+    def seek(self, offset, whence=0):
+        assert False
 
     def read(self, size=-1):
         self.log.append(("read", size))
@@ -30,7 +35,9 @@ class TestUnSeekable:
         self.log.append(("readlines", sizehint))
         return self._file.readlines(sizehint)
 
+
 class TestUnSeekableResponse(TestUnSeekable):
+
     def __init__(self, text, headers):
         TestUnSeekable.__init__(self, text)
         self.code = 200
@@ -57,7 +64,7 @@ jumps over the lazy
 dog.
 
 """
-    text_lines = map(lambda l: l+"\n", string.split(text, "\n")[:-1])
+    text_lines = map(lambda l: l + "\n", string.split(text, "\n")[:-1])
 
     def testSeekable(self):
         from ClientCookie._Util import seek_wrapper
@@ -105,15 +112,17 @@ dog.
         sfh.seek(-1, 1)
         while 1:
             l = sfh.readline()
-            if l == "": break
+            if l == "":
+                break
             lines.append(l)
-        assert lines == ["s over the lazy\n"]+text_lines[2:]
-        assert sfh.log[2:] == [("readline", -1)]*5
+        assert lines == ["s over the lazy\n"] + text_lines[2:]
+        assert sfh.log[2:] == [("readline", -1)] * 5
         sfh.seek(0)
         lines = []
         while 1:
             l = sfh.readline()
-            if l == "": break
+            if l == "":
+                break
             lines.append(l)
         assert lines == text_lines
 
@@ -137,7 +146,8 @@ dog.
         text_lines = self.text_lines
         sfh.read(25)
         sfh.seek(-1, 1)
-        self.assertEqual(sfh.readlines(), ["s over the lazy\n"]+text_lines[2:])
+        self.assertEqual(
+            sfh.readlines(), ["s over the lazy\n"] + text_lines[2:])
         nr_logs = len(sfh.log)
         sfh.seek(0)
         assert sfh.readlines() == text_lines

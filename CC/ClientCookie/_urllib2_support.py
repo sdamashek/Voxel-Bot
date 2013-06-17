@@ -11,7 +11,11 @@ COPYING.txt included with the distribution).
 
 """
 
-import copy, time, tempfile, htmlentitydefs, re
+import copy
+import time
+import tempfile
+import htmlentitydefs
+import re
 
 import ClientCookie
 from _ClientCookie import CookieJar, request_host
@@ -20,7 +24,8 @@ from _HeadersUtil import is_html
 from _Debug import getLogger
 debug = getLogger("ClientCookie.cookies").debug
 
-try: True
+try:
+    True
 except NameError:
     True = 1
     False = 0
@@ -34,23 +39,29 @@ try:
 except ImportError:
     pass
 else:
-    import urlparse, urllib2, urllib, httplib
+    import urlparse
+    import urllib2
+    import urllib
+    import httplib
     import sgmllib
     # monkeypatch to fix http://www.python.org/sf/803422 :-(
     sgmllib.charref = re.compile("&#(x?[0-9a-fA-F]+)[^0-9a-fA-F]")
     from urllib2 import URLError, HTTPError
-    import types, string, socket
+    import types
+    import string
+    import socket
     from cStringIO import StringIO
     try:
         import threading
-        _threading = threading; del threading
+        _threading = threading
+        del threading
     except ImportError:
         import dummy_threading
-        _threading = dummy_threading; del dummy_threading
+        _threading = dummy_threading
+        del dummy_threading
 
     from _Util import response_seek_wrapper
     from _Request import Request
-
 
     class BaseHandler(urllib2.BaseHandler):
         handler_order = 500
@@ -62,7 +73,6 @@ else:
                 # classes which are not aware of handler_order).
                 return 0
             return cmp(self.handler_order, other.handler_order)
-
 
     # This fixes a bug in urllib2 as of Python 2.1.3 and 2.2.2
     #  (http://www.python.org/sf/549151)
@@ -103,7 +113,7 @@ else:
 
             """
             if code in (301, 302, 303, "refresh") or \
-                   (code == 307 and not req.has_data()):
+                    (code == 307 and not req.has_data()):
                 # Strictly (according to RFC 2616), 301 or 302 in response to
                 # a POST MUST NOT cause a redirection without confirmation
                 # from the user (of urllib2, in this case).  In practice,
@@ -139,7 +149,7 @@ else:
             if hasattr(req, 'redirect_dict'):
                 visited = new.redirect_dict = req.redirect_dict
                 if (visited.get(newurl, 0) >= self.max_repeats or
-                    len(visited) >= self.max_redirections):
+                        len(visited) >= self.max_redirections):
                     raise HTTPError(req.get_full_url(), code,
                                     self.inf_msg + msg, headers, fp)
             else:
@@ -147,7 +157,7 @@ else:
             visited[newurl] = visited.get(newurl, 0) + 1
 
             # Don't close the fp until we are sure that we won't use it
-            # with HTTPError.  
+            # with HTTPError.
             fp.read()
             fp.close()
 
@@ -160,7 +170,6 @@ else:
                   "lead to an infinite loop.\n" \
                   "The last 30x error message was:\n"
 
-
     class HTTPRequestUpgradeProcessor(BaseHandler):
         # upgrade urllib2.Request to this module's Request
         # yuck!
@@ -170,22 +179,24 @@ else:
             if not hasattr(request, "add_unredirected_header"):
                 newrequest = Request(request._Request__original, request.data,
                                      request.headers)
-                try: newrequest.origin_req_host = request.origin_req_host
-                except AttributeError: pass
-                try: newrequest.unverifiable = request.unverifiable
-                except AttributeError: pass
+                try:
+                    newrequest.origin_req_host = request.origin_req_host
+                except AttributeError:
+                    pass
+                try:
+                    newrequest.unverifiable = request.unverifiable
+                except AttributeError:
+                    pass
                 request = newrequest
             return request
 
         https_request = http_request
-
 
     # -------------------------------------------------------------------
     # Beware, the following encoding code is cut-and-pasted between
     # ClientCookie, ClientForm, mechanize and pullparser, and they differ
     # subtly :-(((
     # This particular variant is identical to that in mechanize.
-
     def unescape(data, entities, encoding):
         if data is None or "&" not in data:
             return data
@@ -212,7 +223,7 @@ else:
     def unescape_charref(data, encoding):
         name, base = data, 10
         if name.startswith("x"):
-            name, base= name[1:], 16
+            name, base = name[1:], 16
         uc = unichr(int(name, base))
         if encoding is None:
             return uc
@@ -241,9 +252,10 @@ else:
 
     # -------------------------------------------------------------------
 
-
     # XXX would self.reset() work, instead of raising this exception?
-    class EndOfHeadError(Exception): pass
+    class EndOfHeadError(Exception):
+        pass
+
     class AbstractHeadParser:
         # only these elements are allowed in or before HEAD of document
         head_elems = ("html", "head",
@@ -269,20 +281,20 @@ else:
             raise EndOfHeadError()
 
         def handle_entityref(self, name):
-            #debug("%s", name)
+            # debug("%s", name)
             self.handle_data(unescape(
                 '&%s;' % name, self._entitydefs, self._encoding))
 
         def handle_charref(self, name):
-            #debug("%s", name)
+            # debug("%s", name)
             self.handle_data(unescape_charref(name, self._encoding))
 
         def unescape_attr(self, name):
-            #debug("%s", name)
+            # debug("%s", name)
             return unescape(name, self._entitydefs, self._encoding)
 
         def unescape_attrs(self, attrs):
-            #debug("%s", attrs)
+            # debug("%s", attrs)
             escaped_attrs = {}
             for key, val in attrs.items():
                 escaped_attrs[key] = self.unescape_attr(val)
@@ -294,7 +306,6 @@ else:
         def unknown_charref(self, ref):
             self.handle_data("&#%s;" % ref)
 
-
     try:
         import HTMLParser
     except ImportError:
@@ -302,6 +313,7 @@ else:
     else:
         class XHTMLCompatibleHeadParser(AbstractHeadParser,
                                         HTMLParser.HTMLParser):
+
             def __init__(self):
                 HTMLParser.HTMLParser.__init__(self)
                 AbstractHeadParser.__init__(self)
@@ -315,7 +327,7 @@ else:
                     try:
                         method = getattr(self, 'do_' + tag)
                     except AttributeError:
-                        pass # unknown tag
+                        pass  # unknown tag
                     else:
                         method(attrs)
                 else:
@@ -327,7 +339,7 @@ else:
                 try:
                     method = getattr(self, 'end_' + tag)
                 except AttributeError:
-                    pass # unknown tag
+                    pass  # unknown tag
                 else:
                     method()
 
@@ -381,6 +393,7 @@ else:
         return parser.http_equiv
 
     class HTTPEquivProcessor(BaseHandler):
+
         """Append META HTTP-EQUIV headers to regular HTTP headers."""
 
         handler_order = 300  # before handlers that look at HTTP headers
@@ -400,7 +413,8 @@ else:
             if is_html(ct_hdrs, url, self._allow_xhtml):
                 try:
                     try:
-                        html_headers = parse_head(response, self.head_parser_class())
+                        html_headers = parse_head(
+                            response, self.head_parser_class())
                     finally:
                         response.seek(0)
                 except (HTMLParser.HTMLParseError,
@@ -408,7 +422,8 @@ else:
                     pass
                 else:
                     for hdr, val in html_headers:
-                        # rfc822.Message interprets this as appending, not clobbering
+                        # rfc822.Message interprets this as appending, not
+                        # clobbering
                         headers[hdr] = val
             return response
 
@@ -417,6 +432,7 @@ else:
     # XXX ATM this only takes notice of http responses -- probably
     #   should be independent of protocol scheme (http, ftp, etc.)
     class SeekableProcessor(BaseHandler):
+
         """Make responses seekable."""
 
         def http_response(self, request, response):
@@ -427,6 +443,7 @@ else:
         https_response = http_response
 
     class HTTPCookieProcessor(BaseHandler):
+
         """Handle HTTP cookies.
 
         Public attributes:
@@ -434,6 +451,7 @@ else:
         cookiejar: CookieJar instance
 
         """
+
         def __init__(self, cookiejar=None):
             if cookiejar is None:
                 cookiejar = CookieJar()
@@ -456,8 +474,9 @@ else:
         pass
     else:
         class RobotExclusionError(urllib2.HTTPError):
+
             def __init__(self, request, *args):
-                apply(urllib2.HTTPError.__init__, (self,)+args)
+                apply(urllib2.HTTPError.__init__, (self,) + args)
                 self.request = request
 
         class HTTPRobotRulesProcessor(BaseHandler):
@@ -482,7 +501,7 @@ else:
                 scheme = request.get_type()
                 if host != self._host:
                     self.rfp = self.rfp_class()
-                    self.rfp.set_url(scheme+"://"+host+"/robots.txt")
+                    self.rfp.set_url(scheme + "://" + host + "/robots.txt")
                     self.rfp.read()
                     self._host = host
 
@@ -500,6 +519,7 @@ else:
             https_request = http_request
 
     class HTTPRefererProcessor(BaseHandler):
+
         """Add Referer header to requests.
 
         This only makes sense if you use each RefererProcessor for a single
@@ -510,12 +530,13 @@ else:
         There's a proper implementation of this in module mechanize.
 
         """
+
         def __init__(self):
             self.referer = None
 
         def http_request(self, request):
             if ((self.referer is not None) and
-                not request.has_header("Referer")):
+                    not request.has_header("Referer")):
                 request.add_unredirected_header("Referer", self.referer)
             return request
 
@@ -543,6 +564,7 @@ else:
         https_response = http_response
 
     class HTTPRedirectDebugProcessor(BaseHandler):
+
         def http_request(self, request):
             if hasattr(request, "redirect_dict"):
                 info = getLogger("ClientCookie.http_redirects").info
@@ -550,6 +572,7 @@ else:
             return request
 
     class HTTPRefreshProcessor(BaseHandler):
+
         """Perform HTTP Refresh redirections.
 
         Note that if a non-200 HTTP code has occurred (for example, a 30x
@@ -580,10 +603,10 @@ else:
                 refresh = getheaders(hdrs, "refresh")[0]
                 ii = string.find(refresh, ";")
                 if ii != -1:
-                    pause, newurl_spec = float(refresh[:ii]), refresh[ii+1:]
+                    pause, newurl_spec = float(refresh[:ii]), refresh[ii + 1:]
                     jj = string.find(newurl_spec, "=")
                     if jj != -1:
-                        key, newurl = newurl_spec[:jj], newurl_spec[jj+1:]
+                        key, newurl = newurl_spec[:jj], newurl_spec[jj + 1:]
                     if key.strip().lower() != "url":
                         debug("bad Refresh header: %r" % refresh)
                         return response
@@ -603,6 +626,7 @@ else:
         https_response = http_response
 
     class HTTPErrorProcessor(BaseHandler):
+
         """Process HTTP error responses.
 
         The purpose of this handler is to to allow other response processors a
@@ -628,7 +652,6 @@ else:
             return response
 
         https_response = http_response
-
 
     class AbstractHTTPHandler(BaseHandler):
 
@@ -675,7 +698,7 @@ else:
             if not host:
                 raise URLError('no host given')
 
-            h = http_class(host) # will parse host:port
+            h = http_class(host)  # will parse host:port
             h.set_debuglevel(self._debuglevel)
 
             headers = req.headers.copy()
@@ -688,9 +711,10 @@ else:
             # request.
             headers["Connection"] = "close"
             try:
-                h.request(req.get_method(), req.get_selector(), req.data, headers)
+                h.request(
+                    req.get_method(), req.get_selector(), req.data, headers)
                 r = h.getresponse()
-            except socket.error, err: # XXX what error?
+            except socket.error, err:  # XXX what error?
                 raise URLError(err)
 
             # Pick apart the HTTPResponse object to get the addinfourl
@@ -711,8 +735,8 @@ else:
                                       r.status, r.reason)
             return resp
 
-
     class HTTPHandler(AbstractHTTPHandler):
+
         def http_open(self, req):
             return self.do_open(httplib.HTTPConnection, req)
 
@@ -720,53 +744,57 @@ else:
 
     if hasattr(httplib, 'HTTPS'):
         class HTTPSHandler(AbstractHTTPHandler):
+
             def https_open(self, req):
                 return self.do_open(httplib.HTTPSConnection, req)
 
             https_request = AbstractHTTPHandler.do_request_
 
-##     class HTTPHandler(AbstractHTTPHandler):
-##         def http_open(self, req):
-##             return self.do_open(httplib.HTTP, req)
+# class HTTPHandler(AbstractHTTPHandler):
+# def http_open(self, req):
+# return self.do_open(httplib.HTTP, req)
 
-##         http_request = AbstractHTTPHandler.do_request_
+# http_request = AbstractHTTPHandler.do_request_
 
-##     if hasattr(httplib, 'HTTPS'):
-##         class HTTPSHandler(AbstractHTTPHandler):
-##             def https_open(self, req):
-##                 return self.do_open(httplib.HTTPS, req)
+# if hasattr(httplib, 'HTTPS'):
+# class HTTPSHandler(AbstractHTTPHandler):
+# def https_open(self, req):
+# return self.do_open(httplib.HTTPS, req)
 
-##             https_request = AbstractHTTPHandler.do_request_
+# https_request = AbstractHTTPHandler.do_request_
 
-    if int(10*float(urllib2.__version__[:3])) >= 24:
+    if int(10 * float(urllib2.__version__[:3])) >= 24:
         # urllib2 supports processors already
         from _Opener import OpenerMixin
+
         class OpenerDirector(urllib2.OpenerDirector, OpenerMixin):
             pass
     else:
         from _Opener import OpenerDirector
 
     class OpenerFactory:
+
         """This class's interface is quite likely to change."""
 
         default_classes = [
             # handlers
             urllib2.ProxyHandler,
             urllib2.UnknownHandler,
-            HTTPHandler,  # from this module (derived from new AbstractHTTPHandler)
+            HTTPHandler,
+            # from this module (derived from new AbstractHTTPHandler)
             urllib2.HTTPDefaultErrorHandler,
             HTTPRedirectHandler,  # from this module (bugfixed)
             urllib2.FTPHandler,
             urllib2.FileHandler,
             # processors
             HTTPRequestUpgradeProcessor,
-            #HTTPEquivProcessor,
-            #SeekableProcessor,
+            # HTTPEquivProcessor,
+            # SeekableProcessor,
             HTTPCookieProcessor,
-            #HTTPRefererProcessor,
-            #HTTPRefreshProcessor,
+            # HTTPRefererProcessor,
+            # HTTPRefreshProcessor,
             HTTPErrorProcessor
-            ]
+        ]
         handlers = []
         replacement_handlers = []
 
@@ -812,6 +840,7 @@ else:
 
     _opener = None
     urlopen_lock = _threading.Lock()
+
     def urlopen(url, data=None):
         global _opener
         if _opener is None:

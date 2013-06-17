@@ -11,17 +11,22 @@ COPYING.txt included with the distribution).
 
 # XXX names and comments are not great here
 
-import os, re, string, time, struct
+import os
+import re
+import string
+import time
+import struct
 if os.name == "nt":
     import _winreg
 
 from _ClientCookie import FileCookieJar, CookieJar, Cookie, \
-     MISSING_FILENAME_TEXT, LoadError
+    MISSING_FILENAME_TEXT, LoadError
 from _Util import startswith
 from _Debug import getLogger
 debug = getLogger("ClientCookie").debug
 
-try: True
+try:
+    True
 except NameError:
     True = 1
     False = 0
@@ -37,6 +42,7 @@ def regload(path, leaf):
     return value
 
 WIN32_EPOCH = 0x019db1ded53e8000L  # 1970 Jan 01 00:00:00 in Win32 FILETIME
+
 
 def epoch_time_offset_from_win32_filetime(filetime):
     """Convert from win32 filetime to seconds-since-epoch value.
@@ -54,8 +60,14 @@ def epoch_time_offset_from_win32_filetime(filetime):
 
     return divmod((filetime - WIN32_EPOCH), 10000000L)[0]
 
-def binary_to_char(c): return "%02X" % ord(c)
-def binary_to_str(d): return string.join(map(binary_to_char, list(d)), "")
+
+def binary_to_char(c):
+    return "%02X" % ord(c)
+
+
+def binary_to_str(d):
+    return string.join(map(binary_to_char, list(d)), "")
+
 
 class MSIEBase:
     magic_re = re.compile(r"Client UrlCache MMF Ver \d\.\d.*")
@@ -95,11 +107,16 @@ class MSIEBase:
         try:
             while 1:
                 key = cookies_fh.readline()
-                if key == "": break
+                if key == "":
+                    break
 
                 rl = cookies_fh.readline
-                def getlong(rl=rl): return long(rl().rstrip())
-                def getstr(rl=rl): return rl().rstrip()
+
+                def getlong(rl=rl):
+                    return long(rl().rstrip())
+
+                def getstr(rl=rl):
+                    return rl().rstrip()
 
                 key = key.rstrip()
                 value = getstr()
@@ -120,10 +137,11 @@ class MSIEBase:
                     domain = m.group(1)
                     path = m.group(2)
 
-                    cookies.append({"KEY": key, "VALUE": value, "DOMAIN": domain,
-                                    "PATH": path, "FLAGS": flags, "HIXP": hi_expire,
-                                    "LOXP": lo_expire, "HICREATE": hi_create,
-                                    "LOCREATE": lo_create})
+                    cookies.append(
+                        {"KEY": key, "VALUE": value, "DOMAIN": domain,
+                         "PATH": path, "FLAGS": flags, "HIXP": hi_expire,
+                         "LOXP": lo_expire, "HICREATE": hi_create,
+                         "LOCREATE": lo_create})
         finally:
             cookies_fh.close()
 
@@ -223,7 +241,7 @@ class MSIEBase:
         # check that sig is valid
         if not self.magic_re.match(sig) or size != 0x4000:
             raise LoadError("%s ['%s' %s] does not seem to contain cookies" %
-                          (str(filename), sig, size))
+                           (str(filename), sig, size))
 
         # skip to start of first record
         index.seek(size, 0)
@@ -248,14 +266,14 @@ class MSIEBase:
 
             to_read = (size - 2) * sector
 
-##             from urllib import quote
-##             print "data", quote(data)
-##             print "sig", quote(sig)
-##             print "size in sectors", size
-##             print "size in bytes", size*sector
-##             print "size in units of 16 bytes", (size*sector) / 16
-##             print "size to read in bytes", to_read
-##             print
+# from urllib import quote
+# print "data", quote(data)
+# print "sig", quote(sig)
+# print "size in sectors", size
+# print "size in bytes", size*sector
+# print "size in units of 16 bytes", (size*sector) / 16
+# print "size to read in bytes", to_read
+# print
 
             if sig != "URL ":
                 assert (sig in ("HASH", "LEAK",
@@ -277,7 +295,8 @@ class MSIEBase:
             # read in rest of record if necessary
             if size > 2:
                 more_data = index.read(to_read)
-                if len(more_data) != to_read: break
+                if len(more_data) != to_read:
+                    break
                 data = data + more_data
 
             cookie_re = ("Cookie\:%s\@([\x21-\xFF]+).*?" % username +
@@ -303,6 +322,7 @@ class MSIEBase:
 
 
 class MSIECookieJar(MSIEBase, FileCookieJar):
+
     """FileCookieJar that reads from the Windows MSIE cookies database.
 
     MSIECookieJar can read the cookie files of Microsoft Internet Explorer
@@ -338,6 +358,7 @@ class MSIECookieJar(MSIEBase, FileCookieJar):
     read_all_cookies()
 
     """
+
     def __init__(self, filename=None, delayload=False, policy=None):
         MSIEBase.__init__(self)
         FileCookieJar.__init__(self, filename, delayload, policy)
@@ -381,8 +402,10 @@ class MSIECookieJar(MSIEBase, FileCookieJar):
 
         """
         if filename is None:
-            if self.filename is not None: filename = self.filename
-            else: raise ValueError(MISSING_FILENAME_TEXT)
+            if self.filename is not None:
+                filename = self.filename
+            else:
+                raise ValueError(MISSING_FILENAME_TEXT)
 
         index = open(filename, "rb")
 

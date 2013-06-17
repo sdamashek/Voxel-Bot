@@ -2,12 +2,15 @@
 
 from unittest import TestCase
 
-try: True
+try:
+    True
 except NameError:
     True = 1
     False = 0
 
+
 class IsHtmlTests(TestCase):
+
     def test_is_html(self):
         from ClientCookie._HeadersUtil import is_html
         for allow_xhtml in False, True:
@@ -24,19 +27,21 @@ class IsHtmlTests(TestCase):
                 # since we don't yet handle XML properly
                 ([], ".xhtml", allow_xhtml),
                 (["text/xhtml"], ".xhtml", allow_xhtml),
-                ]:
-                url = "http://example.com/foo"+ext
+            ]:
+                url = "http://example.com/foo" + ext
                 self.assertEqual(expect, is_html(cths, url, allow_xhtml))
 
+
 class HeaderTests(TestCase):
+
     def test_parse_ns_headers(self):
         from ClientCookie._HeadersUtil import parse_ns_headers
 
         # quotes should be stripped
         assert parse_ns_headers(['foo=bar; expires=01 Jan 2040 22:23:32 GMT']) == \
-               [[('foo', 'bar'), ('expires', 2209069412L), ('version', '0')]]
+            [[('foo', 'bar'), ('expires', 2209069412L), ('version', '0')]]
         assert parse_ns_headers(['foo=bar; expires="01 Jan 2040 22:23:32 GMT"']) == \
-               [[('foo', 'bar'), ('expires', 2209069412L), ('version', '0')]]
+            [[('foo', 'bar'), ('expires', 2209069412L), ('version', '0')]]
 
     def test_parse_ns_headers_special_names(self):
         # names such as 'expires' are not special in first name=value pair
@@ -45,7 +50,8 @@ class HeaderTests(TestCase):
 
         # Cookie with name 'expires'
         hdr = 'expires=01 Jan 2040 22:23:32 GMT'
-        expected = [[("expires", "01 Jan 2040 22:23:32 GMT"), ("version", "0")]]
+        expected = [
+            [("expires", "01 Jan 2040 22:23:32 GMT"), ("version", "0")]]
         self.assertEquals(parse_ns_headers([hdr]), expected)
 
     def test_join_header_words(self):
@@ -53,7 +59,7 @@ class HeaderTests(TestCase):
 
         assert join_header_words([[
             ("foo", None), ("bar", "baz"), (None, "value")
-            ]]) == "foo; bar=baz; value"
+        ]]) == "foo; bar=baz; value"
 
         assert join_header_words([[]]) == ""
 
@@ -77,13 +83,14 @@ class HeaderTests(TestCase):
             (r'foo; bar=baz, spam=, foo="\,\;\"", bar= ',
              [[("foo", None), ("bar", "baz")],
               [("spam", "")], [("foo", ',;"')], [("bar", "")]]),
-            ]
+        ]
 
         for arg, expect in tests:
             try:
                 result = split_header_words([arg])
             except:
-                import traceback, StringIO
+                import traceback
+                import StringIO
                 f = StringIO.StringIO()
                 traceback.print_exc(None, f)
                 result = "(error -- traceback follows)\n\n%s" % f.getvalue()
@@ -116,7 +123,7 @@ Got:          '%s'
 
             (r'Basic realm="\"foo\\\\bar\""',
              r'Basic; realm="\"foo\\\\bar\""')
-            ]
+        ]
 
         for arg, expect in tests:
             input = split_header_words([arg])

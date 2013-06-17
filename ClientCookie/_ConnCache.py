@@ -39,20 +39,25 @@ warn("WARNING: MODULE _ConnCache IS UNUSED AND UNTESTED!")
 
 
 class _ConnectionRecord:
+
     def __init__(self, conn, scheme, key, time):
         self.conn, self.scheme, self.key, self.time = conn, scheme, key, time
+
     def __repr__(self):
         return "%s(%s, %s, %s, %s)" % (
             self.__class__.__name__,
             self.conn, self.scheme, self.key, self.time)
 
+
 class ConnectionCache:
+
     """
     For specialized cache policy it makes sense to subclass ConnectionCache and
     perhaps override the .deposit(), ._enforce_limits() and ._dropping()
     methods.
 
     """
+
     def __init__(self, total_capacity=1):
         self._limit = {}
         self.total_capacity(total_capacity)
@@ -119,8 +124,8 @@ class ConnectionCache:
         if reason is None:
             reason = "drop"
 
-##         local $SIG{__DIE__};  # don't interfere with eval below
-##         local $@;
+# local $SIG{__DIE__};  # don't interfere with eval below
+# local $@;
         crs = []
         for cr in self._conns:
             if checker(cr):
@@ -139,7 +144,7 @@ class ConnectionCache:
 
         """
         # XXX HTTPConnection doesn't have a .ping() method
-        #self.drop(lambda cr: not cr.conn.ping(), "ping")
+        # self.drop(lambda cr: not cr.conn.ping(), "ping")
         pass
 
     def get_schemes(self):

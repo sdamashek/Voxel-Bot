@@ -14,10 +14,10 @@ import settings
 
 '''
 CREATE TABLE rules (
-    wiki text, 
-    type text, 
-    pattern text, 
-    channel text, 
+    wiki text,
+    type text,
+    pattern text,
+    channel text,
     ignore integer,
     UNIQUE(wiki, type, pattern, channel, ignore)
 );
@@ -36,7 +36,8 @@ def strip_formatting(message):
     """Strips colors and formatting from IRC messages"""
     return COLOR_RE.sub('', message)
 
-ACTION_RE = re.compile(r'\[\[(.+)\]\] (?P<log>.+)  \* (?P<user>.+) \*  (?P<summary>.+)')
+ACTION_RE = re.compile(
+    r'\[\[(.+)\]\] (?P<log>.+)  \* (?P<user>.+) \*  (?P<summary>.+)')
 
 DIFF_RE = re.compile(r'''
     \[\[(?P<page>.*)\]\]\        # page title
@@ -52,10 +53,10 @@ DIFF_RE = re.compile(r'''
 
 
 class EternalClient(irc.IRCClient):
-    
+
     def __init__(self):
         self.pingger = task.LoopingCall(self.pingServer)
-        
+
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
         self.pingger.start(60, now=False)
@@ -63,15 +64,16 @@ class EternalClient(irc.IRCClient):
     def connectionLost(self, reason):
         irc.IRCClient.connectionLost(self, reason)
         self.pingger.stop()
-        
+
     def pingServer(self):
         self.sendLine('PING %s' % self.transport.connector.host)
-        log.msg('%s sent ping to %s' 
-            % (self.nickname, self.transport.connector.host))
-        
+        log.msg('%s sent ping to %s'
+                % (self.nickname, self.transport.connector.host))
+
     def irc_PONG(self, prefix, params):
-        log.msg('%s received ping from %s' 
-            % (self.nickname, params[1]))
+        log.msg('%s received ping from %s'
+                % (self.nickname, params[1]))
+
 
 class Snatch(EternalClient):
     realname = 'snerk'
@@ -120,7 +122,7 @@ class Snatch(EternalClient):
         for rule in rule_list:
             if rule.channel in ignore:
                 continue
-            pattern = re.compile(r'^%s$' % rule.pattern, re.I|re.U)
+            pattern = re.compile(r'^%s$' % rule.pattern, re.I | re.U)
             if rule.type == 'all':
                 pass
             elif rule.type == 'summary':
@@ -128,7 +130,7 @@ class Snatch(EternalClient):
                     if not pattern.search(diff['summary']):
                         continue
                 else:
-                    if not pattern.search( diff['summary']):
+                    if not pattern.search(diff['summary']):
                         continue
             elif rule.type == 'user':
                 if not pattern.search(diff['user']):
@@ -160,7 +162,7 @@ class Snatch(EternalClient):
         channels = set('#%s' % row[0] for row in self.cursor.fetchall())
         [self.join(channel) for channel in (channels - self.channels)]
         [self.part(channel) for channel in (self.channels - channels)]
-        
+
     def quit(self):
         irc.IRCClient.quit(self)
         self.factory.stopTrying()
@@ -193,7 +195,7 @@ class Snitch(EternalClient):
         for row in self.cursor.fetchall():
             self.channels.add(row[0])
             self.join(row[0])
-            
+
     def joined(self, channel):
         log.msg('Snitch joined: %s' % channel)
         self.channels.add(channel)
@@ -205,13 +207,14 @@ class Snitch(EternalClient):
     def updateRules(self, channel, params, ignore=False, remove=False):
         if len(params) < 2:
             self.msg(channel,
-                '!(un)stalk wiki (page|user|summary|log|all) [pattern]')
+                     '!(un)stalk wiki (page|user|summary|log|all) [pattern]')
             return
         wiki = params[0]
         rule_type = params[1]
 
         if rule_type not in ('summary', 'user', 'page', 'log', 'all'):
-            self.msg(channel, 'Type must be one of: all, user, summary, page, log.')
+            self.msg(
+                channel, 'Type must be one of: all, user, summary, page, log.')
             return
 
         if rule_type == 'all':
@@ -228,15 +231,15 @@ class Snitch(EternalClient):
                 return
         self.cursor.execute(
             'SELECT * FROM rules WHERE \
-            wiki=? AND type=? AND pattern=? AND channel=? AND ignore=?', 
+            wiki=? AND type=? AND pattern=? AND channel=? AND ignore=?',
             (wiki, rule_type, pattern, channel, ignore))
         exists = self.cursor.fetchone()
-        
+
         if remove:
             if exists:
                 self.cursor.execute(
                     'DELETE FROM rules WHERE \
-                    wiki=? AND type=? AND pattern=? AND channel=? AND ignore=?', 
+                    wiki=? AND type=? AND pattern=? AND channel=? AND ignore=?',
                     (wiki, rule_type, pattern, channel, ignore))
                 self.msg(channel, 'Rule deleted.')
             else:
@@ -246,7 +249,7 @@ class Snitch(EternalClient):
                 self.msg(channel, 'Rule already exists.')
             else:
                 self.cursor.execute(
-                    'INSERT OR REPLACE INTO rules VALUES (?,?,?,?,?)', 
+                    'INSERT OR REPLACE INTO rules VALUES (?,?,?,?,?)',
                     (wiki, rule_type, pattern, channel, ignore))
                 self.msg(channel, 'Rule added.')
         for snatch in self.factory.snatches:
@@ -254,14 +257,14 @@ class Snitch(EternalClient):
 
     def privmsg(self, sender, channel, message):
         if not sender:
-            return # Twisted sucks
+            return  # Twisted sucks
         if channel == self.nickname:
             pass
         elif message.startswith('!'):
             message = message[1:]
         else:
             return
-        
+
         user = sender.split('!', 1)[0]
         hostmask = sender.split('@', 1)[1]
         action = message.split(' ')[0]
@@ -295,8 +298,8 @@ class Snitch(EternalClient):
                 'DELETE FROM channels WHERE name=?', (channel,))
             self.part(channel)
         elif action == 'help':
-            self.msg(channel, 
-                '!(stalk|ignore|unstalk|unignore|list|join|part|quit)')
+            self.msg(channel,
+                     '!(stalk|ignore|unstalk|unignore|list|join|part|quit)')
         elif action == 'quit':
             if hostmask in settings.authorized_users:
                 log.msg('Quitting')
@@ -306,7 +309,7 @@ class Snitch(EternalClient):
         else:
             if hostmask in settings.authorized_users:
                 self.sendLine(message)
-                    
+
         def quit(self):
             irc.IRCClient.quit(self)
             self.factory.stopTrying()
@@ -318,28 +321,28 @@ class Snitch(EternalClient):
         if 'page' in diff:
             if not diff['summary']:
                 diff['summary'] = '[none]'
-            self.msg(rule.channel, '; '.join (('[[%s]]' 
-                % diff['page'], diff['user'], diff['summary'], diff['url'].replace('http://', 'https://'))))
+            self.msg(rule.channel, '; '.join(('[[%s]]'
+                                              % diff['page'], diff['user'], diff['summary'], diff['url'].replace('http://', 'https://'))))
         else:
-            self.msg(rule.channel, '%s %s; https://%s.org/wiki/Special:Log/%s' 
-                % (diff['user'], diff['summary'], rule.wiki.strip('.org'), diff['log']))
+            self.msg(rule.channel, '%s %s; https://%s.org/wiki/Special:Log/%s'
+                     % (diff['user'], diff['summary'], rule.wiki.strip('.org'), diff['log']))
 
 
 class SnatchAndSnitch(protocol.ReconnectingClientFactory):
-    
+
     factories = 0
     snatches = []
     snitches = []
     connection = None
-    
+
     @classmethod
     def startFactory(cls):
         if not cls.factories:
             cls.connection = sqlite3.connect(settings.database)
             cls.connection.text_factory = str
         cls.factories += 1
-      
-    @classmethod  
+
+    @classmethod
     def stopFactory(cls):
         cls.factories -= 1
         if not cls.factories:
@@ -360,4 +363,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

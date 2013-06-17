@@ -18,6 +18,7 @@ It's just a sketch, to check the base class is OK.
 from ClientCookie import MSIEBase, CookieJar
 from _Util import time2netscape
 
+
 def set_cookie_hdr_from_cookie(cookie):
     params = []
     if cookie.name is not None:
@@ -37,13 +38,15 @@ def set_cookie_hdr_from_cookie(cookie):
             params.append("Port=%s" % cookie.port)
     if cookie.secure:
         params.append("secure")
-##     if cookie.comment:
-##         params.append("Comment=%s" % cookie.comment)
-##     if cookie.comment_url:
-##         params.append("CommentURL=%s" % cookie.comment_url)
+# if cookie.comment:
+# params.append("Comment=%s" % cookie.comment)
+# if cookie.comment_url:
+# params.append("CommentURL=%s" % cookie.comment_url)
     return "; ".join(params)
 
+
 class MSIEDBCookieJar(MSIEBase, CookieJar):
+
     """A CookieJar that relies on MS Internet Explorer's cookie database.
 
     XXX Require ctypes or write C extension?  win32all probably requires
@@ -76,11 +79,17 @@ class MSIEDBCookieJar(MSIEBase, CookieJar):
     given.
 
     """
+
     def __init__(self, policy=None):
         MSIEBase.__init__(self)
         FileCookieJar.__init__(self, policy)
-    def clear_session_cookies(self): pass
-    def clear_expired_cookies(self): pass
+
+    def clear_session_cookies(self):
+        pass
+
+    def clear_expired_cookies(self):
+        pass
+
     def clear(self, domain=None, path=None, name=None):
         if None in [domain, path, name]:
             raise NotImplementedError()
@@ -89,27 +98,33 @@ class MSIEDBCookieJar(MSIEBase, CookieJar):
         hdr = "%s=; domain=%s; path=%s; max-age=0" % (name, domain, path)
         r = windll.InternetSetCookie(url, None, hdr)
         # XXX return value of InternetSetCookie?
+
     def _fake_url(self, domain, path):
         # to convince MSIE that Set-Cookie is OK
         return "http://%s%s" % (domain, path)
+
     def set_cookie(self, cookie):
         # XXXX
         url = self._fake_url(cookie.domain, cookie.path)
         r = windll.InternetSetCookie(
             url, None, set_cookie_hdr_from_cookie(cookie))
         # XXX return value of InternetSetCookie?
+
     def add_cookie_header(self, request, unverifiable=False):
         # XXXX
         cookie_header = windll.InternetGetCookie(request.get_full_url())
         # XXX return value of InternetGetCookie?
         request.add_unredirected_header(cookie_header)
+
     def __iter__(self):
         self._load_index_dat()
         return CookieJar.__iter__(self)
+
     def _cookies_for_request(self, request):
         raise NotImplementedError()  # XXXX
+
     def _cookies_for_domain(self, domain, request):
-        #raise NotImplementedError()  # XXXX
+        # raise NotImplementedError()  # XXXX
         debug("Checking %s for cookies to return", domain)
         if not self._policy.domain_return_ok(domain, request):
             return []
@@ -137,4 +152,3 @@ class MSIEDBCookieJar(MSIEBase, CookieJar):
                 cookies.append(cookie)
 
         return cookies
-

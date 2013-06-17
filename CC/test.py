@@ -11,7 +11,8 @@ python test.py --help
 
 """
 
-import sys, string
+import sys
+import string
 
 from ClientCookie._Util import startswith
 
@@ -20,24 +21,27 @@ from ClientCookie._Util import startswith
 MODULE_NAMES = ["test_misc", "test_date", "test_headers", "test_cookies",
                 "test_urllib2"]
 
-## import sys
-## sys.setrecursionlimit(50)
+# import sys
+# sys.setrecursionlimit(50)
 
-import os, traceback
+import os
+import traceback
 from unittest import TestCase
 
-try: True
+try:
+    True
 except NameError:
     True = 1
     False = 0
 
 import ClientCookie
 level = ClientCookie.DEBUG
-#level = ClientCookie.INFO
-#level = ClientCookie.NOTSET
-#ClientCookie.getLogger("ClientCookie").setLevel(level)
+# level = ClientCookie.INFO
+# level = ClientCookie.NOTSET
+# ClientCookie.getLogger("ClientCookie").setLevel(level)
 
 RUN_AGAINST_INSTALLED = False
+
 
 def import_tests(module_names):
     """Import everything named *Tests from named modules.

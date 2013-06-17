@@ -12,13 +12,14 @@ of Python 2.4).  It has developed from a port of Gisle Aas' Perl
 module HTTP::Cookies, from the libwww-perl library.
 """
 
-try: True
+try:
+    True
 except NameError:
     False, True = 0, 1
 
 import re
-#VERSION_MATCH = re.search(r'VERSION = "(.*)"', open("ClientCookie/_ClientCookie.py").read())
-#VERSION = VERSION_MATCH.group(1)
+# VERSION_MATCH = re.search(r'VERSION = "(.*)"', open("ClientCookie/_ClientCookie.py").read())
+# VERSION = VERSION_MATCH.group(1)
 VERSION = '1.3.0'
 INSTALL_REQUIRES = []
 NAME = "ClientCookie"
@@ -63,6 +64,7 @@ doclines = __doc__.split("\n")
 if not hasattr(sys, "version_info") or sys.version_info < (2, 3):
     from distutils.core import setup
     _setup = setup
+
     def setup(**kwargs):
         ignore_keys = [
             # distutils >= Python 2.3 args
@@ -70,7 +72,7 @@ if not hasattr(sys, "version_info") or sys.version_info < (2, 3):
             "classifiers", "download_url",
             # setuptools args
             "install_requires", "zip_safe", "test_suite",
-            ]
+        ]
         if sys.version_info < (2, 1):
             ignore_keys.append("platforms")
         for key in ignore_keys:
@@ -90,21 +92,21 @@ else:
     from setuptools import setup
 
 setup(
-    name = NAME,
-    version = VERSION,
-    license = LICENSE,
-    platforms = PLATFORMS,
-    classifiers = [c for c in CLASSIFIERS.split("\n") if c],
-    install_requires = INSTALL_REQUIRES,
-    zip_safe = ZIP_SAFE,
-    test_suite = "test",
-    author = "John J. Lee",
-    author_email = "jjl@pobox.com",
-    description = doclines[0],
-    long_description = "\n".join(doclines[2:]),
-    url = "http://wwwsearch.sourceforge.net/%s/" % NAME,
-    download_url = ("http://wwwsearch.sourceforge.net/%s/src/"
-                    "%s-%s.tar.gz" % (NAME, NAME, VERSION)),
+    name=NAME,
+    version=VERSION,
+    license=LICENSE,
+    platforms=PLATFORMS,
+    classifiers=[c for c in CLASSIFIERS.split("\n") if c],
+    install_requires=INSTALL_REQUIRES,
+    zip_safe=ZIP_SAFE,
+    test_suite="test",
+    author="John J. Lee",
+    author_email="jjl@pobox.com",
+    description=doclines[0],
+    long_description="\n".join(doclines[2:]),
+    url="http://wwwsearch.sourceforge.net/%s/" % NAME,
+    download_url=("http://wwwsearch.sourceforge.net/%s/src/"
+                  "%s-%s.tar.gz" % (NAME, NAME, VERSION)),
     py_modules = py_modules,
     packages = packages,
-    )
+)

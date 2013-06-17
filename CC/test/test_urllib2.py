@@ -9,40 +9,57 @@
 # ProxyHandler, CustomProxy, CustomProxyHandler (I don't use a proxy)
 # GopherHandler (haven't used gopher for a decade or so...)
 
-import unittest, StringIO, os, sys, UserDict
+import unittest
+import StringIO
+import os
+import sys
+import UserDict
 
 import urllib2
 from ClientCookie._urllib2_support import Request, AbstractHTTPHandler, \
-     build_opener, parse_head, urlopen
+    build_opener, parse_head, urlopen
 from ClientCookie._Util import startswith
 from ClientCookie import HTTPRedirectHandler, HTTPRequestUpgradeProcessor, \
-     HTTPEquivProcessor, HTTPRefreshProcessor, SeekableProcessor, \
-     HTTPCookieProcessor, HTTPRefererProcessor, \
-     HTTPErrorProcessor, HTTPHandler
+    HTTPEquivProcessor, HTTPRefreshProcessor, SeekableProcessor, \
+    HTTPCookieProcessor, HTTPRefererProcessor, \
+    HTTPErrorProcessor, HTTPHandler
 from ClientCookie import OpenerDirector
 
-try: True
+try:
+    True
 except NameError:
     True = 1
     False = 0
 
-## from ClientCookie import getLogger, DEBUG
-## l = getLogger("ClientCookie")
-## l.setLevel(DEBUG)
+# from ClientCookie import getLogger, DEBUG
+# l = getLogger("ClientCookie")
+# l.setLevel(DEBUG)
+
 
 class MockOpener:
     addheaders = []
+
     def open(self, req, data=None):
         self.req, self.data = req, data
+
     def error(self, proto, *args):
         self.proto, self.args = proto, args
 
+
 class MockFile:
-    def read(self, count=None): pass
-    def readline(self, count=None): pass
-    def close(self): pass
+
+    def read(self, count=None):
+        pass
+
+    def readline(self, count=None):
+        pass
+
+    def close(self):
+        pass
+
 
 class MockHeaders(UserDict.UserDict):
+
     def getallmatchingheaders(self, name):
         r = []
         for k, v in self.data.items():
@@ -50,39 +67,55 @@ class MockHeaders(UserDict.UserDict):
                 r.append("%s: %s" % (k, v))
         return r
 
+
 class MockResponse(StringIO.StringIO):
+
     def __init__(self, code, msg, headers, data, url=None):
         StringIO.StringIO.__init__(self, data)
         self.code, self.msg, self.headers, self.url = code, msg, headers, url
+
     def info(self):
         return self.headers
+
     def geturl(self):
         return self.url
 
+
 class MockCookieJar:
+
     def add_cookie_header(self, request, unverifiable=False):
         self.ach_req, self.ach_u = request, unverifiable
+
     def extract_cookies(self, response, request, unverifiable=False):
         self.ec_req, self.ec_r, self.ec_u = request, response, unverifiable
 
+
 class MockMethod:
+
     def __init__(self, meth_name, action, handle):
         self.meth_name = meth_name
         self.handle = handle
         self.action = action
+
     def __call__(self, *args):
-        return apply(self.handle, (self.meth_name, self.action)+args)
+        return apply(self.handle, (self.meth_name, self.action) + args)
+
 
 class MockHandler:
     processor_order = 500
+
     def __init__(self, methods):
         self._define_methods(methods)
+
     def _define_methods(self, methods):
         for spec in methods:
-            if len(spec) == 2: name, action = spec
-            else: name, action = spec, None
+            if len(spec) == 2:
+                name, action = spec
+            else:
+                name, action = spec, None
             meth = MockMethod(name, action, self.handle)
             setattr(self.__class__, name, meth)
+
     def handle(self, fn_name, action, *args, **kwds):
         self.parent.calls.append((self, fn_name, args, kwds))
         if action is None:
@@ -101,23 +134,28 @@ class MockHandler:
         elif action == "raise":
             raise urllib2.URLError("blah")
         assert False
-    def close(self): pass
+
+    def close(self):
+        pass
+
     def add_parent(self, parent):
         self.parent = parent
         self.parent.calls = []
+
     def __cmp__(self, other):
         if hasattr(other, "handler_order"):
             return cmp(self.handler_order, other.handler_order)
         # No handler_order, leave in original order.  Yuck.
         return -1
-        #return cmp(id(self), id(other))
+        # return cmp(id(self), id(other))
 
 
 def add_ordered_mock_handlers(opener, meth_spec):
     handlers = []
     count = 0
     for meths in meth_spec:
-        class MockHandlerSubclass(MockHandler): pass
+        class MockHandlerSubclass(MockHandler):
+            pass
         h = MockHandlerSubclass(meths)
         h.handler_order = h.processor_order = count
         h.add_parent(opener)
@@ -125,6 +163,7 @@ def add_ordered_mock_handlers(opener, meth_spec):
         handlers.append(h)
         opener.add_handler(h)
     return handlers
+
 
 class OpenerDirectorTests(unittest.TestCase):
 
@@ -136,7 +175,7 @@ class OpenerDirectorTests(unittest.TestCase):
             ["ftp_open"],
             [("http_open", "return self")],
             [("http_open", "return self")],
-            ]
+        ]
         handlers = add_ordered_mock_handlers(o, meth_spec)
 
         req = Request("http://example.com/")
@@ -159,8 +198,9 @@ class OpenerDirectorTests(unittest.TestCase):
         for meths, handler_order in [
             ([("http_open", "return self")], 500),
             (["http_open"], 0),
-            ]:
-            class MockHandlerSubclass(MockHandler): pass
+        ]:
+            class MockHandlerSubclass(MockHandler):
+                pass
             h = MockHandlerSubclass(meths)
             h.handler_order = handler_order
             handlers.append(h)
@@ -177,16 +217,16 @@ class OpenerDirectorTests(unittest.TestCase):
         meth_spec = [
             [("http_open", "raise")],
             [("http_open", "return self")],
-            ]
+        ]
         handlers = add_ordered_mock_handlers(o, meth_spec)
 
         req = Request("http://example.com/")
         self.assertRaises(urllib2.URLError, o.open, req)
         self.assert_(o.calls == [(handlers[0], "http_open", (req,), {})])
 
-##     def test_error(self):
-##         # XXX this doesn't actually seem to be used in standard library,
-##         #  but should really be tested anyway...
+# def test_error(self):
+# XXX this doesn't actually seem to be used in standard library,
+# but should really be tested anyway...
 
     def test_http_error(self):
         # XXX http_error_default
@@ -198,10 +238,11 @@ class OpenerDirectorTests(unittest.TestCase):
             [("http_error_302", "return response"), "http_error_303",
              "http_error"],
             [("http_error_302")],
-            ]
+        ]
         handlers = add_ordered_mock_handlers(o, meth_spec)
 
-        class Unknown: pass
+        class Unknown:
+            pass
 
         req = Request("http://example.com/")
         r = o.open(req)
@@ -225,7 +266,7 @@ class OpenerDirectorTests(unittest.TestCase):
              ("http_response", "return response")],
             [("http_request", "return request"),
              ("http_response", "return response")],
-            ]
+        ]
         handlers = add_ordered_mock_handlers(o, meth_spec)
 
         req = Request("http://example.com/")
@@ -254,24 +295,31 @@ class OpenerDirectorTests(unittest.TestCase):
 
 
 class MockHTTPResponse:
+
     def __init__(self, fp, msg, status, reason):
         self.fp = fp
         self.msg = msg
         self.status = status
         self.reason = reason
+
     def read(self):
         return ''
 
+
 class MockHTTPClass:
+
     def __init__(self):
         self.req_headers = []
         self.data = None
         self.raise_on_endheaders = False
+
     def __call__(self, host):
         self.host = host
         return self
+
     def set_debuglevel(self, level):
         self.level = level
+
     def request(self, method, url, body=None, headers={}):
         self.method = method
         self.selector = url
@@ -281,23 +329,33 @@ class MockHTTPClass:
         if self.raise_on_endheaders:
             import socket
             raise socket.error()
+
     def getresponse(self):
         return MockHTTPResponse(MockFile(), {}, 200, "OK")
 
+
 class MockFTPWrapper:
-    def __init__(self, data): self.data = data
+
+    def __init__(self, data):
+        self.data = data
+
     def retrfile(self, filename, filetype):
         self.filename, self.filetype = filename, filetype
         return StringIO.StringIO(self.data), len(self.data)
 
+
 class NullFTPHandler(urllib2.FTPHandler):
-    def __init__(self, data): self.data = data
+
+    def __init__(self, data):
+        self.data = data
+
     def connect_ftp(self, user, passwd, host, port, dirs):
         self.user, self.passwd = user, passwd
         self.host, self.port = host, port
         self.dirs = dirs
         self.ftpwrapper = MockFTPWrapper(self.data)
         return self.ftpwrapper
+
 
 def sanepathname2url(path):
     import urllib
@@ -307,29 +365,38 @@ def sanepathname2url(path):
     # XXX don't ask me about the mac...
     return urlpath
 
+
 class MockRobotFileParserClass:
+
     def __init__(self):
         self.calls = []
         self._can_fetch = True
+
     def clear(self):
         self.calls = []
+
     def __call__(self):
         self.calls.append("__call__")
         return self
+
     def set_url(self, url):
         self.calls.append(("set_url", url))
+
     def read(self):
         self.calls.append("read")
+
     def can_fetch(self, ua, url):
         self.calls.append(("can_fetch", ua, url))
         return self._can_fetch
+
 
 class HandlerTests(unittest.TestCase):
 
     if hasattr(sys, "version_info") and sys.version_info > (2, 1, 3, "final", 0):
 
         def test_ftp(self):
-            import ftplib, socket
+            import ftplib
+            import socket
             data = "rheum rhaponicum"
             h = NullFTPHandler(data)
             o = h.parent = MockOpener()
@@ -348,7 +415,7 @@ class HandlerTests(unittest.TestCase):
                 #("ftp://localhost/baz.gif;type=a",
                 # "localhost", ftplib.FTP_PORT, "A",
                 # [], "baz.gif", "image/gif"),
-                ]:
+            ]:
                 r = h.ftp_open(Request(url))
                 # ftp authentication not yet implemented by FTPHandler
                 self.assert_(h.user == h.passwd == "")
@@ -362,11 +429,13 @@ class HandlerTests(unittest.TestCase):
                 self.assert_(int(headers["Content-length"]) == len(data))
 
         def test_file(self):
-            import time, rfc822, socket
+            import time
+            import rfc822
+            import socket
             h = urllib2.FileHandler()
             o = h.parent = MockOpener()
 
-            #TESTFN = test_support.TESTFN
+            # TESTFN = test_support.TESTFN
             TESTFN = "test.txt"
             urlpath = sanepathname2url(os.path.abspath(TESTFN))
             towrite = "hello, world\n"
@@ -379,7 +448,7 @@ class HandlerTests(unittest.TestCase):
                 "file://%s" % urlpath,
                 "file://%s%s" % (socket.gethostbyname('localhost'), urlpath),
                 "file://%s%s" % (fqdn, urlpath)
-                ]:
+            ]:
                 f = open(TESTFN, "wb")
                 try:
                     try:
@@ -405,12 +474,12 @@ class HandlerTests(unittest.TestCase):
 
             for url in [
                 "file://localhost:80%s" % urlpath,
-    # XXXX bug: these fail with socket.gaierror, should be URLError
-    ##             "file://%s:80%s/%s" % (socket.gethostbyname('localhost'),
-    ##                                    os.getcwd(), TESTFN),
-    ##             "file://somerandomhost.ontheinternet.com%s/%s" %
-    ##             (os.getcwd(), TESTFN),
-                ]:
+                # XXXX bug: these fail with socket.gaierror, should be URLError
+                # "file://%s:80%s/%s" % (socket.gethostbyname('localhost'),
+                # os.getcwd(), TESTFN),
+                # "file://somerandomhost.ontheinternet.com%s/%s" %
+                # (os.getcwd(), TESTFN),
+            ]:
                 try:
                     f = open(TESTFN, "wb")
                     try:
@@ -435,9 +504,9 @@ class HandlerTests(unittest.TestCase):
             for url, ftp in [
                 ("file://ftp.example.com//foo.txt", True),
                 ("file://ftp.example.com///foo.txt", False),
-    # XXXX bug: fails with OSError, should be URLError
+                # XXXX bug: fails with OSError, should be URLError
                 ("file://ftp.example.com/foo.txt", False),
-                ]:
+            ]:
                 req = Request(url)
                 try:
                     h.file_open(req)
@@ -460,11 +529,14 @@ class HandlerTests(unittest.TestCase):
             r = h.do_open(http, req)
 
             # result attributes
-            r.read; r.readline  # wrapped MockFile methods
-            r.info; r.geturl  # addinfourl methods
+            r.read
+            r.readline  # wrapped MockFile methods
+            r.info
+            r.geturl  # addinfourl methods
             r.code, r.msg == 200, "OK"  # added from MockHTTPClass.getreply()
             hdrs = r.info()
-            hdrs.get; hdrs.has_key  # r.info() gives dict from .getreply()
+            hdrs.get
+            hdrs.has_key  # r.info() gives dict from .getreply()
             self.assert_(r.geturl() == url)
 
             self.assert_(http.host == "example.com")
@@ -488,12 +560,13 @@ class HandlerTests(unittest.TestCase):
             r = MockResponse(200, "OK", {}, "")
             newreq = h.do_request_(req)
             if data is None:  # GET
-                self.assert_(not req.unredirected_hdrs.has_key("Content-length"))
+                self.assert_(
+                    not req.unredirected_hdrs.has_key("Content-length"))
                 self.assert_(not req.unredirected_hdrs.has_key("Content-type"))
             else:  # POST
                 # No longer true, due to workarouhd for buggy httplib
                 # in Python versions < 2.4:
-                #self.assert_(req.unredirected_hdrs["Content-length"] == "0")
+                # self.assert_(req.unredirected_hdrs["Content-length"] == "0")
                 self.assert_(req.unredirected_hdrs["Content-type"] ==
                              "application/x-www-form-urlencoded")
             # XXX the details of Host could be better tested
@@ -594,14 +667,14 @@ class HandlerTests(unittest.TestCase):
             ("set_url", "http://example.com:80/robots.txt"),
             "read",
             ("can_fetch", "", url),
-            ])
+        ])
         # second time: just use existing parser
         rfpc.clear()
         req = Request(url)
         h.http_request(req)
         self.assert_(rfpc.calls == [
             ("can_fetch", "", url),
-            ])
+        ])
         # different URL on same server: same again
         rfpc.clear()
         url = "http://example.com:80/blah.html"
@@ -609,7 +682,7 @@ class HandlerTests(unittest.TestCase):
         h.http_request(req)
         self.assert_(rfpc.calls == [
             ("can_fetch", "", url),
-            ])
+        ])
         # disallowed URL
         rfpc.clear()
         rfpc._can_fetch = False
@@ -633,7 +706,7 @@ class HandlerTests(unittest.TestCase):
             ("set_url", "http://example.com/robots.txt"),
             "read",
             ("can_fetch", "", url),
-            ])
+        ])
         # https url -> should fetch robots.txt from https url too
         rfpc.clear()
         url = "https://example.org/rhubarb.html"
@@ -644,7 +717,7 @@ class HandlerTests(unittest.TestCase):
             ("set_url", "https://example.org/robots.txt"),
             "read",
             ("can_fetch", "", url),
-            ])
+        ])
 
     def test_cookies(self):
         cj = MockCookieJar()
@@ -667,11 +740,16 @@ class HandlerTests(unittest.TestCase):
         o = h.parent = MockOpener()
 
         req = urllib2.Request("http://example.com/")
+
         class MockUnseekableResponse:
             code = 200
             msg = "OK"
-            def info(self): pass
-            def geturl(self): return ""
+
+            def info(self):
+                pass
+
+            def geturl(self):
+                return ""
         r = MockUnseekableResponse()
         newr = h.http_response(req, r)
         self.assert_(not hasattr(r, "seek"))
@@ -688,7 +766,7 @@ class HandlerTests(unittest.TestCase):
             '<html><head>'
             '<meta http-equiv="Refresh" content="spam&amp;eggs">'
             '</head></html>'
-            )
+        )
         newr = h.http_response(req, r)
         headers = newr.info()
         self.assert_(headers["Refresh"] == "spam&eggs")
@@ -771,13 +849,13 @@ class UnescapeTests(unittest.TestCase):
 
     def test_unescape_charref(self):
         from ClientCookie._urllib2_support import \
-             unescape_charref, get_entitydefs
+            unescape_charref, get_entitydefs
         mdash_utf8 = u"\u2014".encode("utf-8")
         for ref, codepoint, utf8, latin1 in [
             ("38", 38, u"&".encode("utf-8"), "&"),
             ("x2014", 0x2014, mdash_utf8, "&#x2014;"),
             ("8212", 8212, mdash_utf8, "&#8212;"),
-            ]:
+        ]:
             self.assertEqual(unescape_charref(ref, None), unichr(codepoint))
             self.assertEqual(unescape_charref(ref, 'latin-1'), latin1)
             self.assertEqual(unescape_charref(ref, 'utf-8'), utf8)
@@ -791,7 +869,7 @@ class UnescapeTests(unittest.TestCase):
             ("gt", ord(u">")),
             ("mdash", 0x2014),
             ("spades", 0x2660),
-            ]:
+        ]:
             self.assertEqual(ed[name], codepoint)
 
     def test_unescape(self):
@@ -800,12 +878,12 @@ class UnescapeTests(unittest.TestCase):
         data = "&amp; &lt; &mdash; &#8212; &#x2014;"
         mdash_utf8 = u"\u2014".encode("utf-8")
         ue = unescape(data, get_entitydefs(), "utf-8")
-        self.assertEqual("& < %s %s %s" % ((mdash_utf8,)*3), ue)
+        self.assertEqual("& < %s %s %s" % ((mdash_utf8,) * 3), ue)
 
         for text, expect in [
             ("&a&amp;", "&a&"),
             ("a&amp;", "a&"),
-            ]:
+        ]:
             got = unescape(text, get_entitydefs(), "latin-1")
             self.assertEqual(got, expect)
 
@@ -818,8 +896,8 @@ class HeadParserTests(unittest.TestCase):
         htmls = [
             ("""<meta http-equiv="refresh" content="1; http://example.com/">
             """,
-            [("refresh", "1; http://example.com/")]
-            ),
+                [("refresh", "1; http://example.com/")]
+             ),
             ("""
             <html><head>
             <meta http-equiv="refresh" content="1; http://example.com/">
@@ -830,13 +908,17 @@ class HeadParserTests(unittest.TestCase):
             </html>
             """,
              [("refresh", "1; http://example.com/"), ("foo", "bar")])
-            ]
+        ]
         for html, result in htmls:
-            self.assertEqual(parse_head(StringIO.StringIO(html), HeadParser()), result)
+            self.assertEqual(
+                parse_head(StringIO.StringIO(html), HeadParser()), result)
 
 
 class MockHTTPHandler(HTTPHandler):
-    def __init__(self): self._count = 0
+
+    def __init__(self):
+        self._count = 0
+
     def http_open(self, req):
         import mimetools
         from StringIO import StringIO
@@ -851,12 +933,13 @@ class MockHTTPHandler(HTTPHandler):
             msg = mimetools.Message(StringIO("\r\n\r\n"))
             return MockResponse(200, "OK", msg, "", req.get_full_url())
 
+
 class MiscTests(unittest.TestCase):
 
     def test_cookie_redirect(self):
         # cookies shouldn't leak into redirected requests
         from ClientCookie import CookieJar, build_opener, HTTPHandler, \
-             HTTPCookieProcessor
+            HTTPCookieProcessor
         from urllib2 import HTTPError
 
         from test_cookies import interact_netscape
@@ -870,22 +953,51 @@ class MiscTests(unittest.TestCase):
         self.assert_(not hh.req.has_header("Cookie"))
 
 
-class MyHTTPHandler(HTTPHandler): pass
+class MyHTTPHandler(HTTPHandler):
+    pass
+
+
 class FooHandler(urllib2.BaseHandler):
-    def foo_open(self): pass
+
+    def foo_open(self):
+        pass
+
+
 class BarHandler(urllib2.BaseHandler):
-    def bar_open(self): pass
+
+    def bar_open(self):
+        pass
+
 
 class A:
-    def a(self): pass
+
+    def a(self):
+        pass
+
+
 class B(A):
-    def a(self): pass
-    def b(self): pass
+
+    def a(self):
+        pass
+
+    def b(self):
+        pass
+
+
 class C(A):
-    def c(self): pass
+
+    def c(self):
+        pass
+
+
 class D(C, B):
-    def a(self): pass
-    def d(self): pass
+
+    def a(self):
+        pass
+
+    def d(self):
+        pass
+
 
 class FunctionTests(unittest.TestCase):
 
@@ -927,7 +1039,7 @@ class FunctionTests(unittest.TestCase):
             names = methnames(obj)
             names.sort()
             # special methods vary over Python versions
-            names = filter(lambda mn: mn[0:2] != "__" , names)
+            names = filter(lambda mn: mn[0:2] != "__", names)
             r.append(names)
         return r
 

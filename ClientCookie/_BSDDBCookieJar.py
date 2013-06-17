@@ -21,9 +21,11 @@ import cPickle
 pickle = cPickle
 del cPickle
 
-try: StopIteration
+try:
+    StopIteration
 except NameError:
     from _ClientCookie import StopIteration
+
 
 def CreateBSDDBCookieJar(filename, policy=None):
     """Return a BSDDBCookieJar given a BSDDB filename.
@@ -43,17 +45,23 @@ def CreateBSDDBCookieJar(filename, policy=None):
     db.open(filename, bsddb.db.DB_HASH, bsddb.db.DB_CREATE, 0666)
     return BSDDBCookieJar(policy, db)
 
+
 class BSDDBIterator:
     # XXXX should this use thread lock?
+
     def __init__(self, cursor):
         iterator = None
         self._c = cursor
         self._i = iterator
-    def __iter__(self): return self
+
+    def __iter__(self):
+        return self
+
     def close(self):
         if self._c is not None:
             self._c.close()
         self._c = self._i = self.next = self.__iter__ = None
+
     def next(self):
         while 1:
             if self._i is None:
@@ -68,11 +76,14 @@ class BSDDBIterator:
             except StopIteration:
                 self._i = None
                 continue
+
     def __del__(self):
         # XXXX will this work?
         self.close()
 
+
 class BSDDBCookieJar(CookieJar):
+
     """CookieJar based on a BSDDB database, using the standard bsddb module.
 
     You should use CreateBSDDBCookieJar instead of the constructor, unless you
@@ -93,17 +104,21 @@ class BSDDBCookieJar(CookieJar):
     """
     # XXX
     # use transactions to make multiple reader processes possible
+
     def __init__(self, policy=None, db=None):
         CookieJar.__init__(self, policy)
         del self._cookies
         if db is None:
             db = bsddb.db.DB()
         self._db = db
+
     def close(self):
         self._db.close()
+
     def __del__(self):
         # XXXX will this work?
         self.close()
+
     def clear(self, domain=None, path=None, name=None):
         if name is not None:
             if (domain is None) or (path is None):
@@ -132,6 +147,7 @@ class BSDDBCookieJar(CookieJar):
                     raise KeyError("no domain '%s'" % domain)
         finally:
             self._cookies_lock.release()
+
     def set_cookie(self, cookie):
         db = self._db
         self._cookies_lock.acquire()
@@ -142,20 +158,24 @@ class BSDDBCookieJar(CookieJar):
                 c2 = {}
             else:
                 c2 = pickle.loads(data)
-            if not c2.has_key(cookie.path): c2[cookie.path] = {}
+            if not c2.has_key(cookie.path):
+                c2[cookie.path] = {}
             c3 = c2[cookie.path]
             c3[cookie.name] = cookie
             db.put(cookie.domain, pickle.dumps(c2))
         finally:
             self._cookies_lock.release()
+
     def __iter__(self):
         return BSDDBIterator(self._db.cursor())
+
     def _cookies_for_request(self, request):
         """Return a list of cookies to be returned to server."""
         cookies = []
         for domain in self._db.keys():
             cookies.extend(self._cookies_for_domain(domain, request))
         return cookies
+
     def _cookies_for_domain(self, domain, request, unverifiable):
         debug("Checking %s for cookies to return", domain)
         if not self._policy.domain_return_ok(domain, request, unverifiable):

@@ -15,7 +15,8 @@ This file can also be run as a script to install or upgrade setuptools.
 """
 import sys
 DEFAULT_VERSION = "0.6a11"
-DEFAULT_URL     = "http://cheeseshop.python.org/packages/%s/s/setuptools/" % sys.version[:3]
+DEFAULT_URL = "http://cheeseshop.python.org/packages/%s/s/setuptools/" % sys.version[
+    :3]
 
 md5_data = {
     'setuptools-0.6a1-py2.3.egg': 'ee819a13b924d9696b0d6ca6d1c5833d',
@@ -46,7 +47,9 @@ md5_data = {
     'setuptools-0.6a9-py2.4.egg': '8f6e01fc12fb1cd006dc0d6c04327ec1',
 }
 
-import sys, os
+import sys
+import os
+
 
 def _validate_md5(egg_name, data):
     if egg_name in md5_data:
@@ -58,7 +61,7 @@ def _validate_md5(egg_name, data):
                 % egg_name
             )
             sys.exit(2)
-    return data    
+    return data
 
 
 def use_setuptools(
@@ -74,24 +77,26 @@ def use_setuptools(
     be the number of seconds that will be paused before initiating a download,
     should one be required.  If an older version of setuptools is installed,
     this routine will print a message to ``sys.stderr`` and raise SystemExit in
-    an attempt to abort the calling script.  
+    an attempt to abort the calling script.
     """
     try:
         import setuptools
         if setuptools.__version__ == '0.0.1':
             print >>sys.stderr, (
-            "You have an obsolete version of setuptools installed.  Please\n"
-            "remove it from your system entirely before rerunning this script."
+                "You have an obsolete version of setuptools installed.  Please\n"
+                "remove it from your system entirely before rerunning this script."
             )
             sys.exit(2)
     except ImportError:
-        egg = download_setuptools(version, download_base, to_dir, download_delay)
+        egg = download_setuptools(
+            version, download_base, to_dir, download_delay)
         sys.path.insert(0, egg)
-        import setuptools; setuptools.bootstrap_install_from = egg
+        import setuptools
+        setuptools.bootstrap_install_from = egg
 
     import pkg_resources
     try:
-        pkg_resources.require("setuptools>="+version)
+        pkg_resources.require("setuptools>=" + version)
 
     except pkg_resources.VersionConflict:
         # XXX could we install in a subprocess here?
@@ -102,9 +107,10 @@ def use_setuptools(
         ) % version
         sys.exit(2)
 
+
 def download_setuptools(
     version=DEFAULT_VERSION, download_base=DEFAULT_URL, to_dir=os.curdir,
-    delay = 15
+    delay=15
 ):
     """Download setuptools from a specified location and return its filename
 
@@ -113,8 +119,9 @@ def download_setuptools(
     with a '/'). `to_dir` is the directory where the egg will be downloaded.
     `delay` is the number of seconds to pause before an actual download attempt.
     """
-    import urllib2, shutil
-    egg_name = "setuptools-%s-py%s.egg" % (version,sys.version[:3])
+    import urllib2
+    import shutil
+    egg_name = "setuptools-%s-py%s.egg" % (version, sys.version[:3])
     url = download_base + egg_name
     saveto = os.path.join(to_dir, egg_name)
     src = dst = None
@@ -136,18 +143,24 @@ I will start the download in %d seconds.
 
 and place it in this directory before rerunning this script.)
 ---------------------------------------------------------------------------""",
-                    version, download_base, delay, url
-                ); from time import sleep; sleep(delay)
+                         version, download_base, delay, url
+                         )
+                from time import sleep
+                sleep(delay)
             log.warn("Downloading %s", url)
             src = urllib2.urlopen(url)
             # Read/write all in one block, so we don't create a corrupt file
             # if the download is interrupted.
             data = _validate_md5(egg_name, src.read())
-            dst = open(saveto,"wb"); dst.write(data)
+            dst = open(saveto, "wb")
+            dst.write(data)
         finally:
-            if src: src.close()
-            if dst: dst.close()
+            if src:
+                src.close()
+            if dst:
+                dst.close()
     return os.path.realpath(saveto)
+
 
 def main(argv, version=DEFAULT_VERSION):
     """Install or upgrade setuptools and EasyInstall"""
@@ -155,13 +168,14 @@ def main(argv, version=DEFAULT_VERSION):
     try:
         import setuptools
     except ImportError:
-        import tempfile, shutil
+        import tempfile
+        import shutil
         tmpdir = tempfile.mkdtemp(prefix="easy_install-")
         try:
             egg = download_setuptools(version, to_dir=tmpdir, delay=0)
-            sys.path.insert(0,egg)
+            sys.path.insert(0, egg)
             from setuptools.command.easy_install import main
-            main(list(argv)+[egg])
+            main(list(argv) + [egg])
         finally:
             shutil.rmtree(tmpdir)
     else:
@@ -169,7 +183,7 @@ def main(argv, version=DEFAULT_VERSION):
             # tell the user to uninstall obsolete version
             use_setuptools(version)
 
-    req = "setuptools>="+version
+    req = "setuptools>=" + version
     import pkg_resources
     try:
         pkg_resources.require(req)
@@ -178,18 +192,17 @@ def main(argv, version=DEFAULT_VERSION):
             from setuptools.command.easy_install import main
         except ImportError:
             from easy_install import main
-        main(list(argv)+[download_setuptools(delay=0)])
-        sys.exit(0) # try to force an exit
+        main(list(argv) + [download_setuptools(delay=0)])
+        sys.exit(0)  # try to force an exit
     else:
         if argv:
             from setuptools.command.easy_install import main
             main(argv)
         else:
-            print "Setuptools version",version,"or greater has been installed."
+            print "Setuptools version", version, "or greater has been installed."
             print '(Run "ez_setup.py -U setuptools" to reinstall or upgrade.)'
 
 
-            
 def update_md5(filenames):
     """Update our built-in md5 registry"""
 
@@ -198,7 +211,7 @@ def update_md5(filenames):
 
     for name in filenames:
         base = os.path.basename(name)
-        f = open(name,'rb')       
+        f = open(name, 'rb')
         md5_data[base] = md5(f.read()).hexdigest()
         f.close()
 
@@ -208,7 +221,9 @@ def update_md5(filenames):
 
     import inspect
     srcfile = inspect.getsourcefile(sys.modules[__name__])
-    f = open(srcfile, 'rb'); src = f.read(); f.close()
+    f = open(srcfile, 'rb')
+    src = f.read()
+    f.close()
 
     match = re.search("\nmd5_data = {\n([^}]+)}", src)
     if not match:
@@ -216,18 +231,13 @@ def update_md5(filenames):
         sys.exit(2)
 
     src = src[:match.start(1)] + repl + src[match.end(1):]
-    f = open(srcfile,'w')
+    f = open(srcfile, 'w')
     f.write(src)
     f.close()
 
 
-if __name__=='__main__':
-    if len(sys.argv)>2 and sys.argv[1]=='--md5update':
+if __name__ == '__main__':
+    if len(sys.argv) > 2 and sys.argv[1] == '--md5update':
         update_md5(sys.argv[2:])
     else:
         main(sys.argv[1:])
-
-
-
-
-

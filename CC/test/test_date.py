@@ -1,12 +1,16 @@
 """Tests for ClientCookie._HTTPDate."""
 
-import re, string, time
+import re
+import string
+import time
 from unittest import TestCase
 
-try: True
+try:
+    True
 except NameError:
     True = 1
     False = 0
+
 
 class DateTimeTests(TestCase):
 
@@ -14,17 +18,17 @@ class DateTimeTests(TestCase):
         from ClientCookie._Util import time2isoz
 
         base = 1019227000
-        day = 24*3600
+        day = 24 * 3600
         assert time2isoz(base) == "2002-04-19 14:36:40Z"
-        assert time2isoz(base+day) == "2002-04-20 14:36:40Z"
-        assert time2isoz(base+2*day) == "2002-04-21 14:36:40Z"
-        assert time2isoz(base+3*day) == "2002-04-22 14:36:40Z"
+        assert time2isoz(base + day) == "2002-04-20 14:36:40Z"
+        assert time2isoz(base + 2 * day) == "2002-04-21 14:36:40Z"
+        assert time2isoz(base + 3 * day) == "2002-04-22 14:36:40Z"
 
         az = time2isoz()
         bz = time2isoz(500000)
         for text in (az, bz):
             assert re.search(r"^\d{4}-\d\d-\d\d \d\d:\d\d:\d\dZ$", text), \
-                   "bad time2isoz format: %s %s" % (az, bz)
+                "bad time2isoz format: %s %s" % (az, bz)
 
     def test_parse_date(self):
         from ClientCookie._Util import http2time
@@ -46,30 +50,31 @@ class DateTimeTests(TestCase):
         # test http2time for supported dates.  Test cases with 2 digit year
         # will probably break in year 2044.
         tests = [
-         'Thu, 03 Feb 1994 00:00:00 GMT',  # proposed new HTTP format
-         'Thursday, 03-Feb-94 00:00:00 GMT',  # old rfc850 HTTP format
-         'Thursday, 03-Feb-1994 00:00:00 GMT',  # broken rfc850 HTTP format
+            'Thu, 03 Feb 1994 00:00:00 GMT',  # proposed new HTTP format
+            'Thursday, 03-Feb-94 00:00:00 GMT',  # old rfc850 HTTP format
+            'Thursday, 03-Feb-1994 00:00:00 GMT',  # broken rfc850 HTTP format
 
-         '03 Feb 1994 00:00:00 GMT',  # HTTP format (no weekday)
-         '03-Feb-94 00:00:00 GMT',  # old rfc850 (no weekday)
-         '03-Feb-1994 00:00:00 GMT',  # broken rfc850 (no weekday)
-         '03-Feb-1994 00:00 GMT',  # broken rfc850 (no weekday, no seconds)
-         '03-Feb-1994 00:00',  # broken rfc850 (no weekday, no seconds, no tz)
+            '03 Feb 1994 00:00:00 GMT',  # HTTP format (no weekday)
+            '03-Feb-94 00:00:00 GMT',  # old rfc850 (no weekday)
+            '03-Feb-1994 00:00:00 GMT',  # broken rfc850 (no weekday)
+            '03-Feb-1994 00:00 GMT',  # broken rfc850 (no weekday, no seconds)
+            '03-Feb-1994 00:00',
+            # broken rfc850 (no weekday, no seconds, no tz)
 
-         '03-Feb-94',  # old rfc850 HTTP format (no weekday, no time)
-         '03-Feb-1994',  # broken rfc850 HTTP format (no weekday, no time)
-         '03 Feb 1994',  # proposed new HTTP format (no weekday, no time)
+            '03-Feb-94',  # old rfc850 HTTP format (no weekday, no time)
+            '03-Feb-1994',  # broken rfc850 HTTP format (no weekday, no time)
+            '03 Feb 1994',  # proposed new HTTP format (no weekday, no time)
 
-         # A few tests with extra space at various places
-         '  03   Feb   1994  0:00  ',
-         '  03-Feb-1994  ',
+            # A few tests with extra space at various places
+            '  03   Feb   1994  0:00  ',
+            '  03-Feb-1994  ',
         ]
 
         test_t = 760233600  # assume broken POSIX counting of seconds
         result = time2isoz(test_t)
         expected = "1994-02-03 00:00:00Z"
         assert result == expected, \
-               "%s  =>  '%s' (%s)" % (test_t, result, expected)
+            "%s  =>  '%s' (%s)" % (test_t, result, expected)
 
         for s in tests:
             t = http2time(s)
@@ -77,7 +82,7 @@ class DateTimeTests(TestCase):
             t3 = http2time(string.upper(s))
 
             assert t == t2 == t3 == test_t, \
-                   "'%s'  =>  %s, %s, %s (%s)" % (s, t, t2, t3, test_t)
+                "'%s'  =>  %s, %s, %s (%s)" % (s, t, t2, t3, test_t)
 
     def test_http2time_garbage(self):
         from ClientCookie._Util import http2time
@@ -92,7 +97,7 @@ class DateTimeTests(TestCase):
             '32-01-1980',
             '01-01-1980 25:00:00',
             '01-01-1980 00:61:00',
-            '01-01-1980 00:00:62']:
+                '01-01-1980 00:00:62']:
 
             bad = False
 

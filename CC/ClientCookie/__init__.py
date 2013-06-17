@@ -1,6 +1,7 @@
 import sys
 
-try: True
+try:
+    True
 except NameError:
     True = 1
     False = 0
@@ -12,16 +13,16 @@ WARNINGS_STREAM = sys.stdout
 
 # Import names so that they can be imported directly from the package, like
 # this:
-#from ClientCookie import <whatever>
+# from ClientCookie import <whatever>
 
 # These work like equivalents from logging.  Use logging direct if you
 # have 2.3.
 from _Debug import getLogger, StreamHandler, NOTSET, INFO, DEBUG
 
 from _ClientCookie import VERSION, __doc__, \
-     Cookie, \
-     CookiePolicy, DefaultCookiePolicy, \
-     CookieJar, FileCookieJar, LoadError, request_host
+    Cookie, \
+    CookiePolicy, DefaultCookiePolicy, \
+    CookieJar, FileCookieJar, LoadError, request_host
 from _LWPCookieJar import LWPCookieJar, lwp_cookie_str
 from _MozillaCookieJar import MozillaCookieJar
 from _MSIECookieJar import MSIECookieJar
@@ -31,28 +32,28 @@ except ImportError:
     pass
 else:
     from _BSDDBCookieJar import BSDDBCookieJar, CreateBSDDBCookieJar
-#from _MSIEDBCookieJar import MSIEDBCookieJar
-#from _ConnCache import ConnectionCache
+# from _MSIEDBCookieJar import MSIEDBCookieJar
+# from _ConnCache import ConnectionCache
 try:
     from urllib2 import AbstractHTTPHandler
 except ImportError:
     pass
 else:
     from ClientCookie._urllib2_support import \
-         Request, \
-         OpenerDirector, build_opener, install_opener, urlopen, \
-         OpenerFactory, urlretrieve, BaseHandler, HeadParser
+        Request, \
+        OpenerDirector, build_opener, install_opener, urlopen, \
+        OpenerFactory, urlretrieve, BaseHandler, HeadParser
     try:
         from ClientCookie._urllib2_support import XHTMLCompatibleHeadParser
     except ImportError:
         pass
     from ClientCookie._urllib2_support import \
-         HTTPHandler, HTTPRedirectHandler, \
-         HTTPRequestUpgradeProcessor, \
-         HTTPEquivProcessor, SeekableProcessor, HTTPCookieProcessor, \
-         HTTPRefererProcessor, \
-         HTTPRefreshProcessor, HTTPErrorProcessor, \
-         HTTPResponseDebugProcessor, HTTPRedirectDebugProcessor
+        HTTPHandler, HTTPRedirectHandler, \
+        HTTPRequestUpgradeProcessor, \
+        HTTPEquivProcessor, SeekableProcessor, HTTPCookieProcessor, \
+        HTTPRefererProcessor, \
+        HTTPRefreshProcessor, HTTPErrorProcessor, \
+        HTTPResponseDebugProcessor, HTTPRedirectDebugProcessor
 
     try:
         import robotparser
@@ -60,7 +61,7 @@ else:
         pass
     else:
         from ClientCookie._urllib2_support import \
-             HTTPRobotRulesProcessor, RobotExclusionError
+            HTTPRobotRulesProcessor, RobotExclusionError
         del robotparser
 
     import httplib
